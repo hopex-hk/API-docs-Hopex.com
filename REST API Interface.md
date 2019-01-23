@@ -201,7 +201,7 @@ side: 方向 1 sell 2 buy
 
 ```
 # Request
-GET http://192.168.70.131:5003/api/v1/gateway/Home/KLines?contractCode=BTCUSDT&endTime=1548160640&startTime=1548160040&interval=60
+GET https://api.hopex.com/api/v1/gateway/Home/KLines?contractCode=BTCUSDT&endTime=1548160640&startTime=1548160040&interval=60
 # Response
 {
   "data": [
