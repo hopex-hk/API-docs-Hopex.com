@@ -83,13 +83,13 @@ amount24h: 24小时交易额
 | :-----    | :-----   | :-----    | :-----   |
 |contractCode|String|是|BTCUSDT ETHUSDT BTCUSD ETHUSD等|
 
-2. Get /api/v1/gateway/OrderBook/Index   获取Hopex合约深度信息
+2. Post /api/v1/gateway/OrderBook/Index   获取Hopex合约深度信息
 
 示例	
 
 ```
 # Request
-Post https://api.hopex.com/api/v1/gateway/OrderBook/Index
+POST https://api.hopex.com/api/v1/gateway/OrderBook/Index
 {
   "param": {
     "contractCode": "BTCUSDT",
