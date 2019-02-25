@@ -3,7 +3,7 @@
     
 ## 请求交互    
 
-REST访问的根URL：`https://api.hopex.com/api/v1/gateway/` 
+REST访问的根URL：`https://api2.hopex.com/api/v1/` 
 
 所有请求基于Https协议
 	
@@ -19,13 +19,13 @@ REST访问的根URL：`https://api.hopex.com/api/v1/gateway/`
 
 获取Hopex合约行情数据  
 
-1. Get /api/v1/gateway/Home/ContractSummary    获取Hopex合约行情
+1. Get /api/v1/ticker    获取Hopex合约行情,访问频率 10次/秒
 
 示例	
 
 ```
 # Request
-GET https://api.hopex.com/api/v1/gateway/Home/ContractSummary?contractCode=BTCUSDT
+GET https://api2.hopex.com/api/v1/ticker?contractCode=BTCUSDT
 # Response
 {
   "data": {
@@ -83,13 +83,13 @@ amount24h: 24小时交易额
 | :-----    | :-----   | :-----    | :-----   |
 |contractCode|String|是|BTCUSDT ETHUSDT BTCUSD ETHUSD等|
 
-2. Post /api/v1/gateway/OrderBook/Index   获取Hopex合约深度信息
+2. Post /api/v1/depth   获取Hopex合约深度信息,访问频率 10次/秒
 
 示例	
 
 ```
 # Request
-POST https://api.hopex.com/api/v1/gateway/OrderBook/Index
+POST https://api2.hopex.com/api/v1/depth
 {
   "param": {
     "contractCode": "BTCUSDT",
@@ -152,13 +152,13 @@ exist: 此价格是否有用户自己的委托
 | :-----    | :-----   | :-----    | :-----   |
 |contractCode|String|是|BTCUSDT ETHUSDT BTCUSD ETHUSD等|
 
-3. Get /api/v1/gateway/Home/GetDeals   获取Hopex新成交信息
+3. Get /api/v1/trades   获取Hopex新成交信息,访问频率 10次/秒
 
 示例	
 
 ```
 # Request
-GET https://api.hopex.com/api/v1/gateway/Home/GetDeals?contractCode=BTCUSDT&pageSize=1&lastId=3
+GET https://api2.hopex.com/api/v1/trades?contractCode=BTCUSDT&pageSize=1
 # Response
 {
   "data": [
@@ -191,17 +191,16 @@ side: 方向 1 sell 2 buy
 | :-----    | :-----   | :-----    | :-----   |
 |contractCode|String|是|BTCUSDT ETHUSDT BTCUSD ETHUSD等|
 |pageSize|int|是|请求个数|
-|lastId|int|是|默认填0|
 
 
 
- 4. Get /api/v1/gateway/Home/KLines   获取Hopex K线
+ 4. Get /api/v1/kline   获取Hopex K线,访问频率 10次/秒
 
 示例	
 
 ```
 # Request
-GET https://api.hopex.com/api/v1/gateway/Home/KLines?contractCode=BTCUSDT&endTime=1548160640&startTime=1548160040&interval=60
+GET https://api2.hopex.com/api/v1/kline?contractCode=BTCUSDT&endTime=1548160640&startTime=1548160040&interval=60
 # Response
 {
   "data": [
@@ -236,5 +235,56 @@ data: K线数据：成交时间戳,开/收/高/低价,成交量,成交额,合约
 |endTime|int64|是|结束时间戳(单位秒)|
 |startTime|int64|是|开始时间戳(单位秒)|
 |interval|int|是|间隔(单位秒)|
+
+
+
+ 5. Get /api/v1/markets   获取Hopex 所有合约行情,访问频率 10次/秒
+
+示例	
+
+```
+# Request
+GET https://api2.hopex.com/api/v1/markets
+# Response
+{
+    "data": [
+        {
+            "contractCode": "BTCUSDT",
+            "contractName": "BTC/USDT永续",
+            "allowTrade": true,
+            "hasPosition": false,
+            "posiDirect": 0,
+            "closeCurrency": "USDT",
+            "quotedCurrency": "USDT",
+            "precision": 2,
+            "minPriceMovement": 0.5,
+            "pricePrecision": 1,
+            "lastestPrice": 3904.5,
+            "changePercent24h": -0.00153433064825469888761028,
+            "sumAmount24h": 137.22705
+        },
+        ...
+   ],
+  "ret": 0,
+  "env": 0,
+  "timestamp": 1548160685910
+}
+```
+
+返回值说明	
+
+```
+contractCode: 合约编码
+contractName: 合约名称
+allowTrade: 是否允许交易
+closeCurrency: 结算货币
+minPriceMovement: 最小变动价位
+lastestPrice: 最新价
+pricePrecision: 价格精度
+changePercent24h: 24小时涨跌幅
+sumAmount24h：24小时交易额
+```
+
+
 
 
