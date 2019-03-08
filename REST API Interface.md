@@ -46,7 +46,9 @@ GET https://api2.hopex.com/api/v1/ticker?contractCode=BTCUSDT
     "fairePriceInfo": "合理价格=现货价格+最近15秒成交溢价,此价格可以更加合理地代表Hopex合约价格。浮动盈亏和强平价格均是根据合理价格来计算。",
     "price24Max": "3551.5",
     "price24Min": "3494.5",
-    "amount24h": "3,735,255 USDT"
+    "amount24h": "3,735,255 USDT",
+    "lastPriceToCNY": "￥26242.47",
+    "quantity24h": "13,736,960"
   },
   "ret": 0,
   "env": 0,
@@ -75,6 +77,8 @@ fairePriceInfo: 合理价格-解释
 price24Max: 24小时最高价
 price24Min: 24小时最低价
 amount24h: 24小时交易额
+lastPriceToCNY: 最新价To CNY
+quantity24h: 24小时交易量
 ```
 
 请求参数	
