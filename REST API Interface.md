@@ -289,6 +289,467 @@ changePercent24h: 24小时涨跌幅
 sumAmount24h：24小时交易额
 ```
 
+### 合约交易 API
+用于Hopex合约交易
 
+1. Get /api/v1/userinfo    获取Hopex用户信息,访问频率 1次/秒
+
+示例	
+
+```
+# Request
+GET https://api2.hopex.com/api/v1/userinfo
+# Response
+{
+    "data": {
+        "conversionCurrency": "USD",
+        "profitRate": "0.00%",
+        "totalWealth": "0.00",
+        "floatProfit": "0.00",
+        "position": 0,
+        "activeOrder": 0
+    },
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1555554824314
+}
+```
+
+返回值说明	
+
+```
+conversionCurrency: 计价货币
+profitRate: 当前持仓收益率(浮动盈亏/持仓占用保证金)
+totalWealth: 账户总权益估值
+floatProfit: 总浮动盈亏估值
+position: 持仓数
+activeOrder: 活跃委托书数
+``` 
+
+|参数名|	参数类型|	必填|	描述|
+| :-----    | :-----   | :-----    | :-----   |
+|Authorization|String|是|用户信息验证, Request Header|
+|Date|String|是|当前的GMT时间, Request Header|
+|Digest|String|是|请求包体摘要, Request Header|
+|conversionCurrency|String|否|计价货币,默认为USD, Request Header|
+
+
+2. POST /api/v1/order    下单,访问频率 1次/秒
+
+示例	
+
+```
+# Request
+POST https://api2.hopex.com/api/v1/order
+{
+  "param": {
+    "contractCode": "BTCUSDT",
+    "side": 2,
+    "orderQuantity": 100,
+    "orderPrice": 5255.5
+  }
+}
+# Response
+{
+    "data": 1950354706,
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1555559102763
+}
+```
+
+返回值说明	
+
+```
+ret: 为0表示下委托成功
+data: 订单id
+``` 
+
+|参数名|	参数类型|	必填|	描述|
+| :-----    | :-----   | :-----    | :-----   |
+|Authorization|String|是|用户信息验证|
+|Date|String|是|当前的GMT时间|
+|Digest|String|是|请求包体摘要|
+|contractCode|String|是|BTCUSDT ETHUSDT BTCUSD ETHUSD等|
+|side|int|是|1 sell 2 buy|
+|orderQuantity|int|是|订单数量|
+|orderPrice|number|否|最小变动价位整数倍,不填时表示下市价单|
+
+
+3. Get /api/v1/cancel_order    撤单,访问频率 1次/秒
+
+示例	
+
+```
+# Request
+GET https://api2.hopex.com/api/v1/cancel_order
+
+# Response
+{
+    "data": true,
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1555569296445
+}
+```
+
+返回值说明	
+
+```
+ret: 为0且data为true时表示撤单成功
+data: true表示撤单成功
+``` 
+
+|参数名|	参数类型|	必填|	描述|
+| :-----    | :-----   | :-----    | :-----   |
+|Authorization|String|是|用户信息验证|
+|Date|String|是|当前的GMT时间|
+|Digest|String|是|请求包体摘要|
+|orderId|int|是|委托id|
+|contractCode|String|是|BTCUSDT ETHUSDT BTCUSD ETHUSD等|
+
+
+4. Get /api/v1/order_info    获取用户的活跃委托,访问频率 1次/秒
+
+示例	
+
+```
+# Request
+GET https://api2.hopex.com/api/v1/order_info
+
+# Response
+{
+    "data": [
+        {
+            "orderId": 1950442187,
+            "contractCode": "BTCUSDT",
+            "contractName": "BTC/USDT永续",
+            "type": "1",
+            "side": "2",
+            "sideDisplay": "买入",
+            "ctime": "2019-04-18 11:53:09",
+            "mtime": "2019-04-18 11:53:09",
+            "orderQuantity": "+100",
+            "leftQuantity": "100",
+            "fillQuantity": "0",
+            "orderStatus": "2",
+            "orderStatusDisplay": "等待成交",
+            "orderPrice": "5255.5",
+            "leverage": "20.00",
+            "fee": "--",
+            "avgFillMoney": "--",
+            "orderMargin": "2.7329 USDT",
+            "expireTime": "2019-04-25 11:53:09"
+        }
+    ],
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1555570131004
+}        
+```
+
+返回值说明	
+
+```
+orderId: 订单ID
+contractCode: 合约code
+contractName: 合约name
+type: 1.限价 2.市价 3.限价全平 4.市价全平
+side: 方向, 1:卖 2买
+sideDisplay: 方向
+ctime: 创建时间
+mtime: 更新时间
+orderQuantity: 数量（张）
+leftQuantity: 还剩下多少没有成交
+fillQuantity: 已经成交的数量
+orderStatus: 订单状态:1.部分成交 2:等待成交
+orderStatusDisplay: 订单状态
+orderPrice: 委托价
+leverage: 杠杆倍数（2位小数）
+fee: 手续费(小数点后4位)
+avgFillMoney: 成交均价(指数_合理价格小数位数)
+orderMargin: 委托保证金(小数点后4位)
+expireTime: 过期时间
+``` 
+
+|参数名|	参数类型|	必填|	描述|
+| :-----    | :-----   | :-----    | :-----   |
+|Authorization|String|是|用户信息验证|
+|Date|String|是|当前的GMT时间|
+|Digest|String|是|请求包体摘要|
+|contractCode|String|否|不传时查所有合约的活跃委托|
+
+
+5. POST /api/v1/order_history    获取历史委托,访问频率 1次/秒
+
+示例	
+
+```
+# Request
+POST https://api2.hopex.com/api/v1/order_history
+{
+  "param": {
+    "contractCodeList": [
+      
+    ],
+    "typeList": [
+      
+    ],
+    "side": 0,
+    "startTime": 0,
+    "endTime": 0
+  }
+}
+
+# Response
+{
+    "data": {
+        "totalCount": 0,
+        "page": 2,
+        "pageSize": 10,
+        "result": [
+            {
+                "orderId": 1935768402,
+                "contractCode": "BTCUSDT",
+                "contractName": "BTC/USDT永续",
+                "type": "4",
+                "side": "1",
+                "sideDisplay": "卖出",
+                "ctime": "2019-04-17 10:55:51",
+                "ftime": "2019-04-17 10:55:51",
+                "orderQuantity": "-100",
+                "fillQuantity": "-100",
+                "orderStatus": "2",
+                "orderStatusDisplay": "完全成交",
+                "orderPrice": "市价",
+                "leverage": "20.00",
+                "fee": "0.0522 USDT",
+                "avgFillMoney": "5219.50",
+                "closePosPNL": "-0.0050 USDT",
+                "timestamp": 1555469751974534
+            },
+            ...
+        ]
+    },
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1555571374944
+}      
+```
+
+返回值说明	
+
+```
+orderId: 订单ID
+contractCode: 合约code
+contractName: 合约name
+type: 1.限价 2.市价 3.限价全平 4.市价全平
+side: 方向, 1:卖 2买
+sideDisplay: 方向
+ctime: 创建时间
+mtime: 更新时间
+orderQuantity: 数量（张）
+fillQuantity: 已经成交的数量
+orderStatus: 订单状态:1.部分成交 2:等待成交
+orderStatusDisplay: 订单状态
+orderPrice: 委托价
+leverage: 杠杆倍数（2位小数）
+fee: 手续费(小数点后4位)
+avgFillMoney: 成交均价(指数_合理价格小数位数)
+closePosPNL: 平仓盈亏 小数点后4位
+timestamp: 时间戳(微秒)
+``` 
+
+|参数名|	参数类型|	必填|	描述|
+| :-----    | :-----   | :-----    | :-----   |
+|Authorization|String|是|用户信息验证|
+|Date|String|是|当前的GMT时间|
+|Digest|String|是|请求包体摘要|
+|contractCodeList|[]|是|合约列表,为空查询所有|
+|typeList|[]|是|"1":限价单 "2":市价单"3": 限价全平单,"4":市价全平单 5.交割 6.强平单,为空查所有|
+|side|int|是|0:no limit 1 for sell, 2 for buy.|
+|startTime|int|是|开始时间戳|
+|endTime|int|是|结束时间戳|
+|page|int|是|第几页,默认1|
+
+
+6. GET /api/v1/position    获取持仓,访问频率 1次/秒
+
+示例	
+
+```
+# Request
+GET https://api2.hopex.com/api/v1/position
+
+# Response
+{
+    "data": [
+        {
+            "allowFullClose": true,
+            "contractCode": "BTCUSDT",
+            "contractName": "BTC/USDT永续",
+            "leverage": "20.00",
+            "contractValue": "0.0001",
+            "maintMarginRate": "0.005",
+            "takerFee": "0.001",
+            "positionQuantity": "+100",
+            "posiDirect": 1,
+            "posiDirectD": "持多",
+            "entryPrice": "5261.00",
+            "entryPriceD": 5261,
+            "positionMargin": "2.6831 USDT",
+            "positionMarginD": 2.68311,
+            "liquidationPrice": "5024.02",
+            "maintMargin": "0.3133 USDT",
+            "unrealisedPnl": "-0.0025 USDT",
+            "unrealisedPnlPcnt": "-0.09%",
+            "fairPrice": "5260.97",
+            "fairPriceD": 5260.97,
+            "lastPrice": "5260.5",
+            "sequence": 0,
+            "rank": 0,
+            "minPriceMovement": 0.5,
+            "minPriceMovementPrecision": 1
+        }
+    ],
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1555582208144
+}
+```
+
+返回值说明	
+
+```
+allowFullClose: 允许全平
+contractCode: 合约编码
+contractName: 合约名称
+leverage: 杠杆倍数
+contractValue: 合约价值
+maintMarginRate: 合约的维持保证金率
+takerFee: 提取方费率
+positionQuantity: 持仓量
+posiDirect: 持仓方向（持多 1 /持空 -1)
+posiDirectD: 持仓方向（持多/持空)
+entryPrice: 开仓均价
+entryPriceD: 开仓均价
+positionMargin: 持仓占用保证金
+positionMarginD: 持仓占用保证金
+liquidationPrice: 强平价格
+maintMargin: 维持保证金
+unrealisedPnl: 浮动盈亏
+unrealisedPnlPcnt: 收益率
+fairPrice: 合理价格
+fairPriceD: 合理价格
+lastPrice: 最新成交价
+sequence: 档长度
+rank: 用户落在第几档
+minPriceMovement: 最小变动价位
+minPriceMovementPrecision: 最小变动价位精度
+``` 
+
+|参数名|	参数类型|	必填|	描述|
+| :-----    | :-----   | :-----    | :-----   |
+|Authorization|String|是|用户信息验证|
+|Date|String|是|当前的GMT时间|
+|Digest|String|是|请求包体摘要|
+|contractCode|String|否|合约列表|
+
+
+7. GET /api/v1/wallet    获取资产信息,访问频率 1次/秒
+
+示例	
+
+```
+# Request
+GET https://api2.hopex.com/api/v1/wallet
+
+# Response
+{
+    "data": {
+        "detail": [
+            {
+                "assetName": "USDT",
+                "totalWealth": "4.60731228"
+            },
+            {
+                "assetName": "BTC",
+                "totalWealth": "0.00000000"
+            },
+            {
+                "assetName": "ETH",
+                "totalWealth": "0.77710121"
+            }
+        ]
+    },
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1555583462806
+}
+```
+
+返回值说明	
+
+```
+assetName: 资产名字
+totalWealth: 数量
+``` 
+
+|参数名|	参数类型|	必填|	描述|
+| :-----    | :-----   | :-----    | :-----   |
+|Authorization|String|是|用户信息验证|
+|Date|String|是|当前的GMT时间|
+|Digest|String|是|请求包体摘要|
+
+
+验证的细节分为以下四个方面:
+- 生成API Key
+    - 对任何请求进行签名之前,须通过Hopex创建属于您的API Key和API Secret, API Key和API Secret将由Hopex随机生成和提供.
+- 发起请求
+    - 所有私有REST请求头都必须包含Authorization, Date和Digest.
+- 签名
+    - Authorization头的格式如下: -H 'Authorization: hmac apikey="...", algorithm="hmac-sha256", headers="date request-line digest", signature="..."', apikey为您的API Key, signature为method+request-line+" HTTP/1.1"+digest, 用secret使用HMAC SHA256方法加密，通过BASE64编码输出而得到的, request-line是请求接口路径. 如: /api/v1/userinfo, digest是请求body的摘要.
+- GMT时间
+    - Date请求头必须是发送请求时刻对应的标准格林威治时间格式,如 Fri, 19 Apr 2019 03:15:20 GMT, 如果发送请求时刻和服务器时间相差1分钟以上的请求将被系统视为过期并拒绝.
+
+
+以下是生成Authorization, Date和Digest Request Header的示例程序:
+``` javascript
+var apiKey = "..."; // your api key
+var apiSecret = "..."; // your applied secret key
+
+var algorithm = "hmac-sha256";
+var head_auth_headers = "date request-line digest";
+
+var date = new Date().toGMTString();
+pm.globals.set("Date", date);
+
+var data = request.data;
+var Digest = CryptoJS.SHA256(data).toString(CryptoJS.enc.Base64);
+pm.globals.set('Digest', "SHA-256=" + Digest);
+
+var textToSign = "";
+textToSign += "date: " + date + "\n";
+textToSign += request.method + " " + "/api/v1/userinfo" + " HTTP/1.1" + "\n";
+textToSign += "digest: " + "SHA-256=" + Digest;
+console.log("textToSign:\n" + textToSign.replace(/\n/g, "#"));
+var signature = CryptoJS.HmacSHA256(textToSign, apiSecret).toString(CryptoJS.enc.Base64);
+var head_auth = "hmac apikey=\"" + apiKey + "\", algorithm=\"" + algorithm  + "\", headers=\"" + head_auth_headers + "\", signature=\"" + signature + "\"";
+pm.globals.set("Authorization",  head_auth);
+``` 
 
 
