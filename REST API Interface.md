@@ -557,7 +557,7 @@ type: 1.限价 2.市价 3.限价全平 4.市价全平
 side: 方向, 1:卖 2买
 sideDisplay: 方向
 ctime: 创建时间
-mtime: 更新时间
+ftime: 更新时间
 orderQuantity: 数量（张）
 fillQuantity: 已经成交的数量
 orderStatus: 订单状态:1.部分成交 2:等待成交
