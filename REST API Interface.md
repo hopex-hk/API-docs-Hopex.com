@@ -52,6 +52,8 @@ GET https://api2.hopex.com/api/v1/ticker?contractCode=BTCUSDT
   },
   "ret": 0,
   "env": 0,
+  "errCode": null,
+  "errStr": null,  
   "timestamp": 1548150572035
 }
 ```
@@ -131,6 +133,8 @@ POST https://api2.hopex.com/api/v1/depth
   },
   "ret": 0,
   "env": 0,
+  "errCode": null,
+  "errStr": null,  
   "timestamp": 1548156640871
  }    
 ```
@@ -176,6 +180,8 @@ GET https://api2.hopex.com/api/v1/trades?contractCode=BTCUSDT&pageSize=1
   ],
   "ret": 0,
   "env": 0,
+  "errCode": null,
+  "errStr": null,  
   "timestamp": 1548157523524
 }
 ```
@@ -204,31 +210,54 @@ side: 方向 1 sell 2 buy
 
 ```
 # Request
-GET https://api2.hopex.com/api/v1/kline?contractCode=BTCUSDT&endTime=1548160640&startTime=1548160040&interval=60
+GET https://api2.hopex.com/api/v1/kline?contractCode=BTCUSDT&endTime=1548160640&startTime=1548160040&interval=1m  (最多只能获取1000根K线数据)
 # Response
 {
-  "data": [
-    [
-      "1548160060",
-      "3536.0",
-      "3536.5",
-      "3536.5",
-      "3535.0",
-      "6136",
-      "2169.642",
-      "BTCUSDT"
-    ]
-  ],
-  "ret": 0,
-  "env": 0,
-  "timestamp": 1548160685910
+    "data": {
+        "decimalplace": "1",
+        "timeData": [
+            {
+                "time": 1561223880,
+                "open": "10901.0",
+                "close": "10876.5",
+                "high": "10901.0",
+                "low": "10867.5",
+                "vol": "194911",
+                "val": "424098.559",
+                "prevClose": "0.0",
+                "upDown": "-24.50",
+                "upDownRate": "-0.22%",
+                "direct": 1,
+                "contractValue": "0.0001"
+            },
+            ...
+        ]
+    },
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1561343966013
 }
 ```
 
 返回值说明	
 
 ```
-data: K线数据：成交时间戳,开/收/高/低价,成交量,成交额,合约名称
+data: K线数据
+decimalplace: 小数点位数
+time: 时间戳
+open: 开市值
+close: 闭市值
+high: 最高价
+low: 最低价
+vol: 成交量
+val: 成交额
+prevClose: 上一笔的闭市价
+upDown: 涨跌额
+upDownRate: 涨跌率
+direct: 合约方向
+contractValue: 合约价值
 ```
 
 请求参数	
@@ -238,7 +267,7 @@ data: K线数据：成交时间戳,开/收/高/低价,成交量,成交额,合约
 |contractCode|String|是|BTCUSDT ETHUSDT BTCUSD ETHUSD等|
 |endTime|int64|是|结束时间戳(单位秒)|
 |startTime|int64|是|开始时间戳(单位秒)|
-|interval|int|是|间隔(单位秒)|
+|interval|string|是|间隔标识, 1m->1分钟K线 5m->5分钟K线 1h->1小时K线 1d->天K线 1w->周K线 1M->月K线 依此类推|
 
 
 
@@ -265,12 +294,15 @@ GET https://api2.hopex.com/api/v1/markets
             "pricePrecision": 1,
             "lastestPrice": 3904.5,
             "changePercent24h": -0.00153433064825469888761028,
-            "sumAmount24h": 137.22705
+            "sumAmount24h": 7354.4393639723098773,
+            "sumAmount24hUSDT": 75235914.6934367300447790
         },
         ...
    ],
   "ret": 0,
   "env": 0,
+  "errCode": null,
+  "errStr": null,  
   "timestamp": 1548160685910
 }
 ```
@@ -286,7 +318,8 @@ minPriceMovement: 最小变动价位
 lastestPrice: 最新价
 pricePrecision: 价格精度
 changePercent24h: 24小时涨跌幅
-sumAmount24h：24小时交易额
+sumAmount24h：24小时交易额, 以结算货币为单位
+sumAmount24hUSDT: 24小时交易额, 以USDT为单位
 ```
 
 ### 合约交易 API
@@ -336,7 +369,7 @@ activeOrder: 活跃委托书数
 |conversionCurrency|String|否|计价货币,默认为USD, Request Header|
 
 
-2. POST /api/v1/order    下单,访问频率 1次/秒
+2. Post /api/v1/order    下单,访问频率 1次/秒
 
 示例	
 
@@ -375,7 +408,7 @@ data: 订单id
 |Date|String|是|当前的GMT时间|
 |Digest|String|是|请求包体摘要|
 |contractCode|String|是|BTCUSDT ETHUSDT BTCUSD ETHUSD等|
-|side|int|是|1 sell 2 buy|
+|side|int|是|1:买入开多, 2:卖出开空, 3:买入平空, 4:卖出平多|
 |orderQuantity|int|是|订单数量|
 |orderPrice|number|否|最小变动价位整数倍,不填时表示下市价单|
 
@@ -386,7 +419,7 @@ data: 订单id
 
 ```
 # Request
-GET https://api2.hopex.com/api/v1/cancel_order
+GET https://api2.hopex.com/api/v1/cancel_order?orderId=1952293255&contractCode=BTCUSDT
 
 # Response
 {
@@ -421,45 +454,49 @@ data: true表示撤单成功
 
 ```
 # Request
-GET https://api2.hopex.com/api/v1/order_info
+GET https://api2.hopex.com/api/v1/order_info?contractCode=BTCUSDT
 
 # Response
 {
     "data": [
         {
-            "orderId": 1950442187,
+            "orderId": 120396444,
+            "orderType": "买入开多",
+            "direct": 1,
             "contractCode": "BTCUSDT",
             "contractName": "BTC/USDT永续",
             "type": "1",
             "side": "2",
             "sideDisplay": "买入",
-            "ctime": "2019-04-18 11:53:09",
-            "mtime": "2019-04-18 11:53:09",
-            "orderQuantity": "+100",
-            "leftQuantity": "100",
+            "ctime": "2019-06-26 15:03:09",
+            "mtime": "2019-06-26 15:03:09",
+            "orderQuantity": "+1,000",
+            "leftQuantity": "1,000",
             "fillQuantity": "0",
             "orderStatus": "2",
             "orderStatusDisplay": "等待成交",
-            "orderPrice": "5255.5",
-            "leverage": "20.00",
+            "orderPrice": "12785.5",
+            "leverage": 20,
             "fee": "--",
             "avgFillMoney": "--",
-            "orderMargin": "2.7329 USDT",
-            "expireTime": "2019-04-25 11:53:09"
+            "orderMargin": "66.4846 USDT",
+            "expireTime": "2019-07-03 15:03:09"
         }
     ],
     "ret": 0,
     "errCode": null,
     "errStr": null,
     "env": 0,
-    "timestamp": 1555570131004
-}        
+    "timestamp": 1561532593797
+}   
 ```
 
 返回值说明	
 
 ```
 orderId: 订单ID
+orderType 委托类型
+direct 1 多仓，2空仓
 contractCode: 合约code
 contractName: 合约name
 type: 1.限价 2.市价 3.限价全平 4.市价全平
@@ -488,7 +525,7 @@ expireTime: 过期时间
 |contractCode|String|否|不传时查所有合约的活跃委托|
 
 
-5. POST /api/v1/order_history    获取历史委托,访问频率 1次/秒
+5. Post /api/v1/order_history    获取历史委托,访问频率 1次/秒
 
 示例	
 
@@ -522,6 +559,7 @@ POST https://api2.hopex.com/api/v1/order_history
                 "contractName": "BTC/USDT永续",
                 "type": "4",
                 "side": "1",
+                "direct": 2,
                 "sideDisplay": "卖出",
                 "ctime": "2019-04-17 10:55:51",
                 "ftime": "2019-04-17 10:55:51",
@@ -534,7 +572,8 @@ POST https://api2.hopex.com/api/v1/order_history
                 "fee": "0.0522 USDT",
                 "avgFillMoney": "5219.50",
                 "closePosPNL": "-0.0050 USDT",
-                "timestamp": 1555469751974534
+                "timestamp": 1555469751974534,
+                "orderType": "卖出开空"
             },
             ...
         ]
@@ -555,9 +594,10 @@ contractCode: 合约code
 contractName: 合约name
 type: 1.限价 2.市价 3.限价全平 4.市价全平
 side: 方向, 1:卖 2买
+direct: 订单对应的持仓方向: 1.多仓 2.空仓
 sideDisplay: 方向
 ctime: 创建时间
-ftime: 更新时间
+ftime: 完成时间
 orderQuantity: 数量（张）
 fillQuantity: 已经成交的数量
 orderStatus: 订单状态:1.部分成交 2:等待成交
@@ -568,6 +608,7 @@ fee: 手续费(小数点后4位)
 avgFillMoney: 成交均价(指数_合理价格小数位数)
 closePosPNL: 平仓盈亏 小数点后4位
 timestamp: 时间戳(微秒)
+orderType: 买入开多 卖出开空 买入平空 卖出平多
 ``` 
 
 |参数名|	参数类型|	必填|	描述|
@@ -583,7 +624,7 @@ timestamp: 时间戳(微秒)
 |page|int|是|第几页,默认1|
 
 
-6. GET /api/v1/position    获取持仓,访问频率 1次/秒
+6. Get /api/v1/position    获取持仓,访问频率 1次/秒
 
 示例	
 
@@ -603,6 +644,7 @@ GET https://api2.hopex.com/api/v1/position
             "maintMarginRate": "0.005",
             "takerFee": "0.001",
             "positionQuantity": "+100",
+            "direct": 2,
             "posiDirect": 1,
             "posiDirectD": "持多",
             "entryPrice": "5261.00",
@@ -619,7 +661,9 @@ GET https://api2.hopex.com/api/v1/position
             "sequence": 0,
             "rank": 0,
             "minPriceMovement": 0.5,
-            "minPriceMovementPrecision": 1
+            "minPriceMovementPrecision": 1,
+            "positionQuantityFreeze": "0",
+            "closeablePositionQuantity": "200"
         }
     ],
     "ret": 0,
@@ -641,6 +685,7 @@ contractValue: 合约价值
 maintMarginRate: 合约的维持保证金率
 takerFee: 提取方费率
 positionQuantity: 持仓量
+direct: 持仓方向 1: 多仓，2：空仓
 posiDirect: 持仓方向（持多 1 /持空 -1)
 posiDirectD: 持仓方向（持多/持空)
 entryPrice: 开仓均价
@@ -658,6 +703,8 @@ sequence: 档长度
 rank: 用户落在第几档
 minPriceMovement: 最小变动价位
 minPriceMovementPrecision: 最小变动价位精度
+positionQuantityFreeze: 冻结的持仓量,等待成交的平仓订单的总量
+closeablePositionQuantity: 可平数量
 ``` 
 
 |参数名|	参数类型|	必填|	描述|
@@ -668,7 +715,7 @@ minPriceMovementPrecision: 最小变动价位精度
 |contractCode|String|否|合约列表|
 
 
-7. GET /api/v1/wallet    获取资产信息,访问频率 1次/秒
+7. Get /api/v1/wallet    获取资产信息,访问频率 1次/秒
 
 示例	
 
@@ -714,6 +761,92 @@ totalWealth: 数量
 |Authorization|String|是|用户信息验证|
 |Date|String|是|当前的GMT时间|
 |Digest|String|是|请求包体摘要|
+
+
+8. Get /api/v1/get_leverage    获取用户合约杠杆,访问频率 1次/秒
+
+示例	
+
+```
+# Request
+GET https://api2.hopex.com/api/v1/get_leverage?contractCode=BTCUSDT
+
+# Response
+{
+    "data": {
+        "longLeverage": "20.00",
+        "shortLeverage": "15.00",
+        "longLeverageEditable": true,
+        "shortLeverageEditable": true,
+        "varyRange": "0.5",
+        "maintenanceMarginRate": "0.5%",
+        "minLeverage": 2,
+        "maxLeverage": 100,
+        "defaultLeverage": 59
+    },
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1563009712076
+}
+```
+
+返回值说明	
+
+```
+longLeverage: 多仓杠杆（如果没有设置或者没有登录为最大杠杆或默认杠杆）
+shortLeverage: 空仓杠杆
+longLeverageEditable: 多仓杠杆是否允许编辑（如果有活跃委托或者活跃计划委托就不允许编辑）
+shortLeverageEditable: 空仓杠杆是否允许编辑（如果有活跃委托或者活跃计划委托就不允许编辑）
+varyRange: 合约的委托列表区间
+maintenanceMarginRate: 维持保证金率
+minLeverage: 杠杆范围-最小值
+maxLeverage: 杠杆范围-最大值
+defaultLeverage: 默认杠杆
+``` 
+
+|参数名|	参数类型|	必填|	描述|
+| :-----    | :-----   | :-----    | :-----   |
+|Authorization|String|是|用户信息验证|
+|Date|String|是|当前的GMT时间|
+|Digest|String|是|请求包体摘要|
+|contractCode|String|是|合约名字|
+
+
+9. Get /api/v1/set_leverage    获取用户合约杠杆,访问频率 1次/秒
+
+示例	
+
+```
+# Request
+GET https://api2.hopex.com/api/v1/set_leverage?contractCode=BTCUSDT&direct=2&leverage=70
+
+# Response
+{
+    "data": 70,
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1563010363110
+}
+```
+
+返回值说明	
+
+```
+data: 设置成功的杠杆倍数
+``` 
+
+|参数名|	参数类型|	必填|	描述|
+| :-----    | :-----   | :-----    | :-----   |
+|Authorization|String|是|用户信息验证|
+|Date|String|是|当前的GMT时间|
+|Digest|String|是|请求包体摘要|
+|contractCode|String|是|合约名字|
+|direct|String|是|方向:1 多仓，2 空仓|
+|leverage|String|是|杠杆倍数|
 
 
 验证的细节分为以下四个方面:
