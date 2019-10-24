@@ -499,7 +499,7 @@ orderType 委托类型
 direct 1 多仓，2空仓
 contractCode: 合约code
 contractName: 合约name
-type: 1.限价 2.市价 3.限价全平 4.市价全平 5.限价部分平仓单 6.市价部分平仓单(部分平仓)
+type: 1.限价开仓 2.市价开仓 3.限价全平 4.市价全平 5.限价部分平仓单 6.市价部分平仓单(部分平仓)
 side: 方向, 1:卖 2买
 sideDisplay: 方向
 ctime: 创建时间
