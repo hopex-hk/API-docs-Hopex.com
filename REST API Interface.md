@@ -499,7 +499,7 @@ orderType 委托类型
 direct 1 多仓，2空仓
 contractCode: 合约code
 contractName: 合约name
-type: 1.限价开仓 2.市价开仓 3.限价全平 4.市价全平 5.限价部分平仓单 6.市价部分平仓单(部分平仓)
+type: 1.限价开仓 2.市价开仓 3.限价全平 4.市价全平 5.限价部分平仓单 6.市价部分平仓单
 side: 方向, 1:卖 2买
 sideDisplay: 方向
 ctime: 创建时间
@@ -617,7 +617,7 @@ orderType: 买入开多 卖出开空 买入平空 卖出平多
 |Date|String|是|当前的GMT时间|
 |Digest|String|是|请求包体摘要|
 |contractCodeList|[]|是|合约列表,为空查询所有|
-|typeList|[]|是|"1":限价单 "2":市价单"3": 限价全平单,"4":市价全平单 5.交割 6.强平单,为空查所有|
+|typeList|[]|是|1.限价开仓 2.市价开仓 3.限价全平 4.市价全平 5.限价部分平仓单 6.市价部分平仓单|
 |side|int|是|0:no limit 1 for sell, 2 for buy.|
 |startTime|int|是|开始时间戳|
 |endTime|int|是|结束时间戳|
@@ -849,6 +849,117 @@ data: 设置成功的杠杆倍数
 |leverage|String|是|杠杆倍数|
 
 
+10. Post /api/v1/liquidation_history    获取强平历史,访问频率 1次/秒
+
+示例	
+
+```
+# Request
+POST https://api2.hopex.com/api/v1/liquidation_history
+{
+  "param": {
+    "contractCodeList": [
+      
+    ],
+    "side": 0
+  }
+}
+
+# Response
+{
+    "data": {
+        "totalCount": 7,
+        "page": 1,
+        "pageSize": 10,
+        "result": [
+            {
+                "orderId": 7,
+                "contractCode": "ETHUSDT",
+                "contractName": "ETH/USDT永续",
+                "side": "2",
+                "sideDisplay": "买入",
+                "orderType": "买入平空",
+                "direct": 2,
+                "leverage": 20,
+                "orderQuantity": "+70,731",
+                "orderPrice": "194.43",
+                "closePosPNL": "-6545.5086 USDT",
+                "fee": "68.7606 USDT",
+                "ctime": "2019-10-30 14:19:52",
+                "timestamp": 1572416393251656,
+                "direction": 1,
+                "directionDisplay": "空",
+                "positionMargin": "+6614.2692 USDT",
+                "openPrice": "185.17",
+                "liquidationPriceReal": "193.50",
+                "showDetail": false
+            },
+	    ...
+            {
+                "orderId": 2,
+                "contractCode": "EOSUSDT",
+                "contractName": "EOS/USDT永续",
+                "side": "1",
+                "sideDisplay": "卖出",
+                "orderType": "卖出平多",
+                "direct": 1,
+                "leverage": 20,
+                "orderQuantity": "-1,123",
+                "orderPrice": "6.4883",
+                "closePosPNL": "-383.6963 USDT",
+                "fee": "3.6432 USDT",
+                "ctime": "2019-06-27 04:44:47",
+                "timestamp": 1561581887104635,
+                "direction": 2,
+                "directionDisplay": "多",
+                "positionMargin": "+387.3395 USDT",
+                "openPrice": "6.8300",
+                "liquidationPriceReal": "6.5567"
+            }
+        ]
+    },
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1572501526044
+}
+```
+
+返回值说明	
+
+```
+orderId: 订单ID
+contractCode: 合约code
+contractName: 合约name
+side: 方向, 1:卖 2买
+sideDisplay: 方向
+orderType: 买入开多 卖出开空 买入平空 卖出平多
+direct: 订单对应的持仓方向: 1.多仓 2.空仓
+leverage: 杠杆倍数（2位小数）
+ftime: 完成时间
+orderQuantity: 数量（张）
+orderPrice: 价格
+closePosPNL: 平仓盈亏 小数点后4位
+fee: 手续费(小数点后4位)
+ctime: 创建时间
+timestamp: 时间戳(微秒)
+direction: 1.空 2.多
+positionMargin: 持仓占用保证金 (4位小数)
+openPrice: 开仓均价
+liquidationPriceReal: 强平价格
+``` 
+
+|参数名|	参数类型|	必填|	描述|
+| :-----    | :-----   | :-----    | :-----   |
+|Authorization|String|是|用户信息验证|
+|Date|String|是|当前的GMT时间|
+|Digest|String|是|请求包体摘要|
+|contractCodeList|[]|是|合约列表,为空查询所有|
+|side|int|是|0:no limit 1 for sell, 2 for buy.|
+|page|int|是|第几页,默认1|
+
+
 验证的细节分为以下四个方面:
 - 生成API Key
     - 对任何请求进行签名之前,须通过Hopex创建属于您的API Key和API Secret, API Key和API Secret将由Hopex随机生成和提供.
@@ -879,7 +990,7 @@ var textToSign = "";
 textToSign += "date: " + date + "\n";
 textToSign += request.method + " " + "/api/v1/userinfo" + " HTTP/1.1" + "\n";
 textToSign += "digest: " + "SHA-256=" + Digest;
-console.log("textToSign:\n" + textToSign.replace(/\n/g, "#"));
+console.log("textToSign:\n" + textToSignjiekou.replace(/\n/g, "#"));
 var signature = CryptoJS.HmacSHA256(textToSign, apiSecret).toString(CryptoJS.enc.Base64);
 var head_auth = "hmac apikey=\"" + apiKey + "\", algorithm=\"" + algorithm  + "\", headers=\"" + head_auth_headers + "\", signature=\"" + signature + "\"";
 pm.globals.set("Authorization",  head_auth);
