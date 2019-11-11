@@ -795,7 +795,7 @@ GET https://api2.hopex.com/api/v1/get_leverage?contractCode=BTCUSDT
 返回值说明	
 
 ```
-longLeverage: 多仓杠杆（如果没有设置或者没有登录为最大杠杆或默认杠杆）
+longLeverage: 多仓杠杆（如果没有设置为最大杠杆或默认杠杆）
 shortLeverage: 空仓杠杆
 longLeverageEditable: 多仓杠杆是否允许编辑（如果有活跃委托或者活跃计划委托就不允许编辑）
 shortLeverageEditable: 空仓杠杆是否允许编辑（如果有活跃委托或者活跃计划委托就不允许编辑）
@@ -959,6 +959,79 @@ liquidationPriceReal: 强平价格
 |side|int|是|0:no limit 1 for sell, 2 for buy.|
 |page|int|是|第几页,默认1|
 
+
+11. Get /api/v1/account_records    获取用户出入金记录,访问频率 1次/秒
+
+示例	
+
+```
+# Request
+GET https://api2.hopex.com/api/v1/account_records?page=1&limit=10
+
+# Response
+{
+    "data": {
+        "totalCount": 8,
+        "page": 1,
+        "pageSize": 10,
+        "result": [
+            {
+                "asset": "USDT",
+                "orderType": 4,
+                "orderTypeD": "普通链上出金",
+                "amount": "-1900.00000000 USDT",
+                "rmbAmount": "0.00 CNY",
+                "bankName": "",
+                "addr": "mvYW73ZTo8F7aksBrWad3XvqViqDE3saaP",
+                "orderStatus": 1,
+                "orderStatusD": "完成",
+                "createdTime": "2019-10-31 15:52:11"
+            },
+            ...
+            {
+                "asset": "USDT",
+                "orderType": 2,
+                "orderTypeD": "OTC出金",
+                "amount": "-100.00000000 USDT",
+                "rmbAmount": "704.00 CNY",
+                "bankName": "邮政",
+                "addr": "",
+                "orderStatus": 1,
+                "orderStatusD": "完成",
+                "createdTime": "2019-07-27 15:02:21"
+            }
+        ]
+    },
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1572935091833
+}
+```
+
+返回值说明	
+
+```
+asset: 币种
+orderType: 1 OTC入金，2 OTC出金，3 链上入金，4 链上出金，5 内部转账-入金，6 内部转账-出金, 7 人工入金, 8 人工出金,9 快速入金,10 快速出金
+orderTypeD: 交易类型描述
+amount: 数字货币金额
+rmbAmount: 人民币金额
+bankName: 银行名
+addr: 钱包地址
+orderStatus: 0 进行中，1 完成，2失败
+orderStatusD: 交易状态描述
+createdTime: 时间
+``` 
+
+|参数名|	参数类型|	必填|	描述|
+| :-----    | :-----   | :-----    | :-----   |
+|Authorization|String|是|用户信息验证|
+|Date|String|是|当前的GMT时间|
+|Digest|String|是|请求包体摘要|
+|page|int|否|第几页,默认1|
+|limit|int|否|每页返回条数,默认20|
 
 
 
