@@ -173,6 +173,7 @@ GET https://api2.hopex.com/api/v1/trades?contractCode=BTCUSDT&pageSize=1
     {
       "id": 3102886,
       "time": "19:45:20",
+      "timestamp": 1573540239.530246,      
       "fillPrice": "3504.0",
       "fillQuantity": "1,603",
       "side": "1"
@@ -976,6 +977,7 @@ GET https://api2.hopex.com/api/v1/account_records?page=1&limit=10
         "pageSize": 10,
         "result": [
             {
+	    	"id": 58413,
                 "asset": "USDT",
                 "orderType": 4,
                 "orderTypeD": "普通链上出金",
