@@ -191,6 +191,7 @@ GET https://api2.hopex.com/api/v1/trades?contractCode=BTCUSDT&pageSize=1
 
 ```
 time: 成交时间
+timestamp: 成交时间戳
 fillPrice: 成交价格
 fillQuantity: 成交数量
 side: 方向 1 sell 2 buy
@@ -991,6 +992,7 @@ GET https://api2.hopex.com/api/v1/account_records?page=1&limit=10
             },
             ...
             {
+	    	"id": 58421,
                 "asset": "USDT",
                 "orderType": 2,
                 "orderTypeD": "OTC出金",
