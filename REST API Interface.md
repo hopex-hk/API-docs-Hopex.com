@@ -269,7 +269,7 @@ contractValue: 合约价值
 |contractCode|String|是|BTCUSDT ETHUSDT BTCUSD ETHUSD等|
 |endTime|int64|是|结束时间戳(单位秒)|
 |startTime|int64|是|开始时间戳(单位秒)|
-|interval|string|是|间隔标识, 1m->1分钟K线 5m->5分钟K线 1h->1小时K线 1d->天K线 1w->周K线 1M->月K线 依此类推|
+|interval|String|是|间隔标识, 1m->1分钟K线 5m->5分钟K线 1h->1小时K线 1d->天K线 1w->周K线 1M->月K线 依此类推|
 
 
 
@@ -1071,7 +1071,7 @@ var textToSign = "";
 textToSign += "date: " + date + "\n";
 textToSign += request.method + " " + "/api/v1/userinfo" + " HTTP/1.1" + "\n";
 textToSign += "digest: " + "SHA-256=" + Digest;
-console.log("textToSign:\n" + textToSignjiekou.replace(/\n/g, "#"));
+console.log("textToSign:\n" + textToSign.replace(/\n/g, "#"));
 var signature = CryptoJS.HmacSHA256(textToSign, apiSecret).toString(CryptoJS.enc.Base64);
 var head_auth = "hmac apikey=\"" + apiKey + "\", algorithm=\"" + algorithm  + "\", headers=\"" + head_auth_headers + "\", signature=\"" + signature + "\"";
 pm.globals.set("Authorization",  head_auth);
