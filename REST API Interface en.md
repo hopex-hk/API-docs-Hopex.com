@@ -13,6 +13,9 @@ Request Process Description
 3. Server response: the server first performs a parameter security check on the user's request data, and after authentication check, the response data is returned to the user in JSON format according to business logic.
 4. Data processing: process the server response. 
 
+Special note:
+Some apis are response in Chinese default, if you prefer English version, please add the parameter: `culture=en` at every request.
+
 ## API Reference   
 
 ### Contract Price API 
