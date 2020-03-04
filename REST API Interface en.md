@@ -321,6 +321,48 @@ sumAmount24h：24h Trading Turnover in Settlement Currency
 sumAmount24hUSDT: 24h Trading Turnover in USDT
 ```
 
+6. Get /api/v1/indexStat    Get Hopex Volume,rate limit 10 times/s
+
+Example  
+
+```
+# Request
+GET https://api2.hopex.com/api/v1/indexStat
+# Response
+{
+  "data": {
+        "posVauleUSD": "568,467,422.95",
+        "posVauleCNY": "3,943,771,170.06",
+        "amount24hUSD": "1,504,196,973.56",
+        "amount24hCNY": "10,435,441,713.95",
+        "amount7dayUSD": "12,702,202,974.38",
+        "amount7dayCNY": "88,122,168,244.92",
+        "userCount": "527,670",
+        "dealCountUSD": "1,765,475,066,609.42",
+        "dealCountCNY": "12,248,071,548,356.19"
+    },
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1583300598281
+}
+```
+
+Return Value  
+
+```
+posVauleUSD: Open Interest(USD)
+posVauleCNY: Open Interest(CNY)
+amount24hUSD: 24H Volume(USD)
+amount24hCNY: 24H Volume(CNY)
+amount7dayUSD: Trading volume in the last 7 days(USD)
+amount7dayCNY: Trading volume in the last 7 days(CNY)
+userCount: User Count
+dealCountUSD: Total Trading volume(USD)
+dealCountCNY: Total Trading volume(CNY)
+```
+
 ### Trading API
 Used for Hopex Contracts Trading
 

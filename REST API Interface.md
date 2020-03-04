@@ -324,6 +324,48 @@ sumAmount24h：24小时交易额, 以结算货币为单位
 sumAmount24hUSDT: 24小时交易额, 以USDT为单位
 ```
 
+6. Get /api/v1/indexStat    获取Hopex成交量,访问频率 10次/秒
+
+示例	
+
+```
+# Request
+GET https://api2.hopex.com/api/v1/indexStat
+# Response
+{
+  "data": {
+        "posVauleUSD": "568,467,422.95",
+        "posVauleCNY": "3,943,771,170.06",
+        "amount24hUSD": "1,504,196,973.56",
+        "amount24hCNY": "10,435,441,713.95",
+        "amount7dayUSD": "12,702,202,974.38",
+        "amount7dayCNY": "88,122,168,244.92",
+        "userCount": "527,670",
+        "dealCountUSD": "1,765,475,066,609.42",
+        "dealCountCNY": "12,248,071,548,356.19"
+    },
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1583300598281
+}
+```
+
+返回值说明	
+
+```
+posVauleUSD: 未平仓合约价值(USD)
+posVauleCNY: 未平仓合约价值(CNY)
+amount24hUSD: 24小时交易额(USD)
+amount24hCNY: 24小时交易额(CNY)
+amount7dayUSD: 7天交易额(USD)
+amount7dayCNY: 7天交易额(CNY)
+userCount: 用户数
+dealCountUSD: 总交易额(USD)
+dealCountCNY: 总交易额(CNY)
+```
+
 ### 合约交易 API
 用于Hopex合约交易
 
