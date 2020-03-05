@@ -666,6 +666,7 @@ orderType: 买入开多 卖出开空 买入平空 卖出平多
 |startTime|int|是|开始时间戳|
 |endTime|int|是|结束时间戳|
 |page|int|是|第几页,默认1|
+|limit|int|否|每页条数,默认10|
 
 
 6. Get /api/v1/position    获取持仓,访问频率 1次/秒

@@ -661,6 +661,7 @@ orderType: Buy to Open Long, Sell to Open Short, Buy to Close Short, Sell to Clo
 |startTime|int|yes|Start Time Stamp|
 |endTime|int|yes|End Time Stamp|
 |page|int|yes|Page No.,Default 1|
+|limit|int|no|Every Page Count,Default 10|
 
 
 
