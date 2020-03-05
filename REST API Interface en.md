@@ -656,7 +656,7 @@ orderType: Buy to Open Long, Sell to Open Short, Buy to Close Short, Sell to Clo
 |Date|String|yes|Current GMT Time|
 |Digest|String|yes|Request for Package Summary|
 |contractCodeList|[]|yes|Contract List, Being blank to search all contracts|
-|typeList|[]|是|1.Limit Price to Open 2.Market Price to Open 3.Limit Price to Close 4.Market Price to Close 5.Limit Price Close Partially Complete 6.Market Price Close Partially Complete
+|typeList|[]|yes|1.Limit Price to Open 2.Market Price to Open 3.Limit Price to Close 4.Market Price to Close 5.Limit Price Close Partially Complete 6.Market Price Close Partially Complete
 |side|int|yes|0:no limit 1 for sell, 2 for buy.|
 |startTime|int|yes|Start Time Stamp|
 |endTime|int|yes|End Time Stamp|
