@@ -445,9 +445,9 @@ data: Order ID
 
 |Parameter|	Type|	Required|	Description|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|yes|User Information Verification|
-|Date|String|yes|Current GMT Time|
-|Digest|String|yes|Request for Package Summary|
+|Authorization|String|yes|User Information Verification, Request Header|
+|Date|String|yes|Current GMT Time, Request Header|
+|Digest|String|yes|Request for Package Summary, Request Header|
 |contractCode|String|no|BTCUSDT ETHUSDT BTCUSD ETHUSD etc|
 |side|int|no|1:Buy Long, 2:Sell Short, 3:Buy to Close Short, 4:Sell to Close Long|
 |orderQuantity|int|yes|Order Quantity|
@@ -481,9 +481,9 @@ data: true means canceling is successful
 
 |Parameter|	Type|	Required|	Description|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|yes|User Information Verification|
-|Date|String|yes|Current GMT Time|
-|Digest|String|yes|Request for Package Summary|
+|Authorization|String|yes|User Information Verification, Request Header|
+|Date|String|yes|Current GMT Time, Request Header|
+|Digest|String|yes|Request for Package Summary, Request Header|
 |orderId|int|yes|Order id|
 |contractCode|String|no|BTCUSDT ETHUSDT BTCUSD ETHUSD etc|
 
@@ -558,9 +558,9 @@ expireTime: Expire Time
 
 |Parameter|    Type|	Required|	Description|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|yes|User Information Verification|
-|Date|String|yes|Current GMT Time|
-|Digest|String|yes|Request for Package Summary|
+|Authorization|String|yes|User Information Verification, Request Header|
+|Date|String|yes|Current GMT Time, Request Header|
+|Digest|String|yes|Request for Package Summary, Request Header|
 |contractCode|String|no|if it is blank, it’s default to search for all active orders of all contracts|
 
 
@@ -652,16 +652,16 @@ orderType: Buy to Open Long, Sell to Open Short, Buy to Close Short, Sell to Clo
 
 |Parameter|	Type|	Required|	Description|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|yes|User Information Verification|
-|Date|String|yes|Current GMT Time|
-|Digest|String|yes|Request for Package Summary|
-|contractCodeList|[]|yes|Contract List, Being blank to search all contracts|
-|typeList|[]|yes|1.Limit Price to Open 2.Market Price to Open 3.Limit Price to Close 4.Market Price to Close 5.Limit Price Close Partially Complete 6.Market Price Close Partially Complete
-|side|int|yes|0:no limit 1 for sell, 2 for buy.|
-|startTime|int|yes|Start Time Stamp|
-|endTime|int|yes|End Time Stamp|
-|page|int|yes|Page No.,Default 1|
-|limit|int|no|Every Page Count,Default 10|
+|Authorization|String|yes|User Information Verification, Request Header|
+|Date|String|yes|Current GMT Time, Request Header|
+|Digest|String|yes|Request for Package Summary, Request Header|
+|contractCodeList|[]|yes|Contract List, Being blank to search all contracts, Request Body|
+|typeList|[]|yes|1.Limit Price to Open 2.Market Price to Open 3.Limit Price to Close 4.Market Price to Close 5.Limit Price Close Partially Complete 6.Market Price Close Partially Complete, Request Body
+|side|int|yes|0:no limit 1 for sell, 2 for buy, Request Body|
+|startTime|int|yes|Start Time Stamp, Request Body|
+|endTime|int|yes|End Time Stamp, Request Body|
+|page|int|yes|Page No.,Default 1, Request Query|
+|limit|int|no|Every Page Count,Default 10, Request Query|
 
 
 
@@ -748,9 +748,9 @@ closeablePositionQuantity: Quantity of  existing positions that can be closed
 
 |Parameter|	Type|	Required|	Description|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|yes|User Information Verification|
-|Date|String|yes|Current GMT Time|
-|Digest|String|yes|Request for Package Summary|
+|Authorization|String|yes|User Information Verification, Request Header|
+|Date|String|yes|Current GMT Time, Request Header|
+|Digest|String|yes|Request for Package Summary, Request Header|
 |contractCode|String|no|Contract List|
 
 
@@ -796,9 +796,9 @@ totalWealth: Asset Value
 
 |Parameter|    Type|	Required|	Description|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|yes|User Information Verification|
-|Date|String|yes|Current GMT Time|
-|Digest|String|yes|Request for Package Summary|
+|Authorization|String|yes|User Information Verification, Request Header|
+|Date|String|yes|Current GMT Time, Request Header|
+|Digest|String|yes|Request for Package Summary, Request Header|
 
 
 8. Get /api/v1/get_leverage    Get positions’ leverages information, rate limit 1 time/s
@@ -845,9 +845,9 @@ defaultLeverage: Default Leverage
 
 |Parameter|    Type|	Required|	Description|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|yes|User Information Verfication|
-|Date|String|yes|Current GMT Time|
-|Digest|String|yes|Request for Package Summary|
+|Authorization|String|yes|User Information Verfication, Request Header|
+|Date|String|yes|Current GMT Time, Request Header|
+|Digest|String|yes|Request for Package Summary, Request Header|
 |contractCode|String|yes|Contract Code|
 
 
@@ -877,9 +877,9 @@ data: Leverage
 
 |Parameter|    Type|	Required|	Description|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|yes|User Information Verification|
-|Date|String|yes|Current GMT Time|
-|Digest|String|yes|Request for Package Summary|
+|Authorization|String|yes|User Information Verification, Request Header|
+|Date|String|yes|Current GMT Time, Request Header|
+|Digest|String|yes|Request for Package Summary, Request Header|
 |contractCode|String|yes|Contract Name|
 |direct|String|yes|Long or Short:1 Long,2 Short|
 |leverage|String|yes|Leverage|
@@ -988,9 +988,9 @@ liquidationPriceReal: Liquidation Price
 
 |Parameter|Type|Required|Description|
 |:-----|:-----|:-----|:-----|
-|Authorization|String|yes|User Information Verification|
-|Date|String|yes|Current GMT Time|
-|Digest|String|yes|Request for Package Summary|
+|Authorization|String|yes|User Information Verification, Request Header|
+|Date|String|yes|Current GMT Time, Request Header|
+|Digest|String|yes|Request for Package Summary, Request Header|
 |contractCodeList|[]|yes|Contract List, leave it black to search all contracts|
 |side|int|yes|0:no limit 1 for sell, 2 for buy.|
 |page|int|yes|Page No., Default 1|
@@ -1064,9 +1064,9 @@ createdTime: Creation Time
 
 |Parameter|	Type|	Required|	Description|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|yes|User Information Verification|
-|Date|String|yes|Current GMT Time|
-|Digest|String|yes|Request for Package Summary|
+|Authorization|String|yes|User Information Verification, Request Header|
+|Date|String|yes|Current GMT Time, Request Header|
+|Digest|String|yes|Request for Package Summary, Request Header|
 |page|int|no|Page No., Default 1|
 |limit|int|no|the number of returned information on each page, Default 20|
 

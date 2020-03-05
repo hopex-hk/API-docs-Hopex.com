@@ -448,9 +448,9 @@ data: 订单id
 
 |参数名|	参数类型|	必填|	描述|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|是|用户信息验证|
-|Date|String|是|当前的GMT时间|
-|Digest|String|是|请求包体摘要|
+|Authorization|String|是|用户信息验证, Request Header|
+|Date|String|是|当前的GMT时间, Request Header|
+|Digest|String|是|请求包体摘要, Request Header|
 |contractCode|String|是|BTCUSDT ETHUSDT BTCUSD ETHUSD等|
 |side|int|是|1:买入开多, 2:卖出开空, 3:买入平空, 4:卖出平多|
 |orderQuantity|int|是|订单数量|
@@ -485,9 +485,9 @@ data: true表示撤单成功
 
 |参数名|	参数类型|	必填|	描述|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|是|用户信息验证|
-|Date|String|是|当前的GMT时间|
-|Digest|String|是|请求包体摘要|
+|Authorization|String|是|用户信息验证, Request Header|
+|Date|String|是|当前的GMT时间, Request Header|
+|Digest|String|是|请求包体摘要, Request Header|
 |orderId|int|是|委托id|
 |contractCode|String|是|BTCUSDT ETHUSDT BTCUSD ETHUSD等|
 
@@ -563,9 +563,9 @@ expireTime: 过期时间
 
 |参数名|	参数类型|	必填|	描述|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|是|用户信息验证|
-|Date|String|是|当前的GMT时间|
-|Digest|String|是|请求包体摘要|
+|Authorization|String|是|用户信息验证, Request Header|
+|Date|String|是|当前的GMT时间, Request Header|
+|Digest|String|是|请求包体摘要, Request Header|
 |contractCode|String|否|不传时查所有合约的活跃委托|
 
 
@@ -575,7 +575,7 @@ expireTime: 过期时间
 
 ```
 # Request
-POST https://api2.hopex.com/api/v1/order_history
+POST https://api2.hopex.com/api/v1/order_history?page=1&limit=10
 {
   "param": {
     "contractCodeList": [
@@ -657,16 +657,16 @@ orderType: 买入开多 卖出开空 买入平空 卖出平多
 
 |参数名|	参数类型|	必填|	描述|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|是|用户信息验证|
-|Date|String|是|当前的GMT时间|
-|Digest|String|是|请求包体摘要|
-|contractCodeList|[]|是|合约列表,为空查询所有|
-|typeList|[]|是|1.限价开仓 2.市价开仓 3.限价全平 4.市价全平 5.限价部分平仓单 6.市价部分平仓单|
-|side|int|是|0:no limit 1 for sell, 2 for buy.|
-|startTime|int|是|开始时间戳|
-|endTime|int|是|结束时间戳|
-|page|int|是|第几页,默认1|
-|limit|int|否|每页条数,默认10|
+|Authorization|String|是|用户信息验证, Request Header|
+|Date|String|是|当前的GMT时间, Request Header|
+|Digest|String|是|请求包体摘要, Request Header|
+|contractCodeList|[]|是|合约列表,为空查询所有, Request Body|
+|typeList|[]|是|1.限价开仓 2.市价开仓 3.限价全平 4.市价全平 5.限价部分平仓单 6.市价部分平仓单, Request Body|
+|side|int|是|0:no limit 1 for sell, 2 for buy, Request Body|
+|startTime|int|是|开始时间戳, Request Body|
+|endTime|int|是|结束时间戳, Request Body|
+|page|int|是|第几页,默认1, Request Query|
+|limit|int|否|每页条数,默认10, Request Query|
 
 
 6. Get /api/v1/position    获取持仓,访问频率 1次/秒
@@ -754,9 +754,9 @@ closeablePositionQuantity: 可平数量
 
 |参数名|	参数类型|	必填|	描述|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|是|用户信息验证|
-|Date|String|是|当前的GMT时间|
-|Digest|String|是|请求包体摘要|
+|Authorization|String|是|用户信息验证, Request Header|
+|Date|String|是|当前的GMT时间, Request Header|
+|Digest|String|是|请求包体摘要, Request Header|
 |contractCode|String|否|合约列表|
 
 
@@ -803,9 +803,9 @@ totalWealth: 数量
 
 |参数名|	参数类型|	必填|	描述|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|是|用户信息验证|
-|Date|String|是|当前的GMT时间|
-|Digest|String|是|请求包体摘要|
+|Authorization|String|是|用户信息验证, Request Header|
+|Date|String|是|当前的GMT时间, Request Header|
+|Digest|String|是|请求包体摘要, Request Header|
 
 
 8. Get /api/v1/get_leverage    获取用户合约杠杆,访问频率 1次/秒
@@ -853,9 +853,9 @@ defaultLeverage: 默认杠杆
 
 |参数名|	参数类型|	必填|	描述|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|是|用户信息验证|
-|Date|String|是|当前的GMT时间|
-|Digest|String|是|请求包体摘要|
+|Authorization|String|是|用户信息验证, Request Header|
+|Date|String|是|当前的GMT时间, Request Header|
+|Digest|String|是|请求包体摘要, Request Header|
 |contractCode|String|是|合约名字|
 
 
@@ -886,9 +886,9 @@ data: 设置成功的杠杆倍数
 
 |参数名|	参数类型|	必填|	描述|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|是|用户信息验证|
-|Date|String|是|当前的GMT时间|
-|Digest|String|是|请求包体摘要|
+|Authorization|String|是|用户信息验证, Request Header|
+|Date|String|是|当前的GMT时间, Request Header|
+|Digest|String|是|请求包体摘要, Request Header|
 |contractCode|String|是|合约名字|
 |direct|String|是|方向:1 多仓，2 空仓|
 |leverage|String|是|杠杆倍数|
@@ -997,9 +997,9 @@ liquidationPriceReal: 强平价格
 
 |参数名|	参数类型|	必填|	描述|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|是|用户信息验证|
-|Date|String|是|当前的GMT时间|
-|Digest|String|是|请求包体摘要|
+|Authorization|String|是|用户信息验证, Request Header|
+|Date|String|是|当前的GMT时间, Request Header|
+|Digest|String|是|请求包体摘要, Request Header|
 |contractCodeList|[]|是|合约列表,为空查询所有|
 |side|int|是|0:no limit 1 for sell, 2 for buy.|
 |page|int|是|第几页,默认1|
@@ -1074,9 +1074,9 @@ createdTime: 时间
 
 |参数名|	参数类型|	必填|	描述|
 | :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|是|用户信息验证|
-|Date|String|是|当前的GMT时间|
-|Digest|String|是|请求包体摘要|
+|Authorization|String|是|用户信息验证, Request Header|
+|Date|String|是|当前的GMT时间, Request Header|
+|Digest|String|是|请求包体摘要, Request Header|
 |page|int|否|第几页,默认1|
 |limit|int|否|每页返回条数,默认20|
 
