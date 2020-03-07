@@ -294,7 +294,8 @@ GET https://api2.hopex.com/api/v1/markets
             "lastestPrice": 3904.5,
             "changePercent24h": -0.00153433064825469888761028,
             "sumAmount24h": 7354.4393639723098773,
-            "sumAmount24hUSDT": 75235914.6934367300447790
+            "sumAmount24hUSDT": 75235914.6934367300447790,
+            "posVauleUSD": "234,406,032.14"
         },
         ...
    ],
@@ -319,6 +320,7 @@ pricePrecision: Price Precision
 changePercent24h: 24h Change
 sumAmount24h：24h Trading Turnover in Settlement Currency
 sumAmount24hUSDT: 24h Trading Turnover in USDT
+posVauleUSD: Contract Position Value in USD
 ```
 
 6. Get /api/v1/indexStat    Get Hopex Volume,rate limit 10 times/s

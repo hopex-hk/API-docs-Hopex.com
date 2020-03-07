@@ -297,7 +297,8 @@ GET https://api2.hopex.com/api/v1/markets
             "lastestPrice": 3904.5,
             "changePercent24h": -0.00153433064825469888761028,
             "sumAmount24h": 7354.4393639723098773,
-            "sumAmount24hUSDT": 75235914.6934367300447790
+            "sumAmount24hUSDT": 75235914.6934367300447790,
+            "posVauleUSD": "234,406,032.14"
         },
         ...
    ],
@@ -321,7 +322,8 @@ lastestPrice: 最新价
 pricePrecision: 价格精度
 changePercent24h: 24小时涨跌幅
 sumAmount24h：24小时交易额, 以结算货币为单位
-sumAmount24hUSDT: 24小时交易额, 以USDT为单位
+sumAmount24hUSDT: 24小时交易额, 以USDT为单位,
+posVauleUSD: 合约未平仓量价值,以USD为单位
 ```
 
 6. Get /api/v1/indexStat    获取Hopex成交量,访问频率 10次/秒
