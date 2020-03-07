@@ -320,7 +320,7 @@ pricePrecision: Price Precision
 changePercent24h: 24h Change
 sumAmount24h：24h Trading Turnover in Settlement Currency
 sumAmount24hUSDT: 24h Trading Turnover in USDT
-posVauleUSD: Contract Position Value in USD
+posVauleUSD: Open Interest
 ```
 
 6. Get /api/v1/indexStat    Get Hopex Volume,rate limit 10 times/s
