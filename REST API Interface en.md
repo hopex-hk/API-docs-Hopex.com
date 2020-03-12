@@ -410,7 +410,7 @@ Request Parameter
 | :-----    | :-----   | :-----    | :-----   |
 |page|int|no|Page No.,Default 1, Request Query|
 |limit|int|no|Every Page Count,Default 20, Request Query|
-|culture|String|否|Language(zh-CN,en,zh-HK),Default zh-CN,The number of announcements may be different in different languages,zh-CN prevail,Request Query|
+|culture|String|no|Language(zh-CN,en,zh-HK),Default zh-CN,The number of announcements may be different in different languages,zh-CN prevail,Request Query|
 
 
 ### Trading API
