@@ -368,6 +368,55 @@ dealCountUSD: 总交易额(USD)
 dealCountCNY: 总交易额(CNY)
 ```
 
+7. Get /api/v1/index_notify   获取Hopex交易所推送公告,访问频率 10次/秒
+
+示例  
+
+```
+# Request
+GET https://api2.hopex.com/api/v1/index_notify?page=1&limit=5&culture=zh-CN 
+# Response
+{
+    "data": {
+        "totalCount": 42,
+        "page": 1,
+        "pageSize": 5,
+        "result": [{
+            "id": 131,
+            "title": "3月10日升级优化完成公告",
+            "link": "https://h5.hopex.com/notify/index.html?id=131",
+            "lastModifiedTime": "2020-03-10 11:32:09",
+            "time": "2020-03-10",
+            "timestamp": 1583811129
+        }]
+    },
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1583997209048
+}
+```
+
+返回值说明   
+
+```
+totalCount: 发布公告总数
+title: 公告标题
+link: 公告跳转链接
+lastModifiedTime: 最新更新时间
+timestamp: 时间戳
+```
+
+请求参数    
+
+|参数名|   参数类型|   必填| 描述|
+| :-----    | :-----   | :-----    | :-----   |
+|page|int|否|第几页,默认1, Request Query|
+|limit|int|否|每页条数,默认10, Request Query|
+|culture|String|否|语言(zh-CN,en,zh-HK),默认zh-CN,不同语言得到公告数量有可能不一致,以zh-CN为准,Request Query|
+
+
 ### 合约交易 API
 用于Hopex合约交易
 

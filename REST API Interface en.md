@@ -365,6 +365,54 @@ dealCountUSD: Total Trading volume(USD)
 dealCountCNY: Total Trading volume(CNY)
 ```
 
+7. Get /api/v1/index_notify   Get Hopex Notifies,rate limit 10 times/s
+
+示例  
+
+```
+# Request
+GET https://api2.hopex.com/api/v1/index_notify?page=1&limit=5&culture=zh-CN 
+# Response
+{
+    "data": {
+        "totalCount": 42,
+        "page": 1,
+        "pageSize": 5,
+        "result": [{
+            "id": 118,
+            "title": "Hopex Annual Review 2019",
+            "link": "https://h5.hopex.com/notify/index.html?id=118",
+            "lastModifiedTime": "2020-03-04 13:29:07",
+            "time": "2020-03-04",
+            "timestamp": 1583299747
+        }]
+    },
+    "ret": 0,
+    "errCode": null,
+    "errStr": null,
+    "env": 0,
+    "timestamp": 1583997209048
+}
+```
+
+Return Value   
+
+```
+totalCount: Hopex Notify Count
+title: Notify Title
+link: Notify Link
+lastModifiedTime: Notify Last Update Time
+timestamp: timestamp
+```
+
+Request Parameter
+|Parameter|    Type|    Required|   Description|
+| :-----    | :-----   | :-----    | :-----   |
+|page|int|no|Page No.,Default 1, Request Query|
+|limit|int|no|Every Page Count,Default 20, Request Query|
+|culture|String|否|Language(zh-CN,en,zh-HK),Default zh-CN,The number of announcements may be different in different languages,zh-CN prevail,Request Query|
+
+
 ### Trading API
 Used for Hopex Contracts Trading
 
