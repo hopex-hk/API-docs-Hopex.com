@@ -1003,7 +1003,89 @@ data: 设置成功的杠杆倍数
 |leverage|number|是|杠杆倍数|
 
 
-9. Post /api/v1/liquidation_history    获取强平历史,访问频率 1次/秒
+9. Post /api/v1/get_orderParas    获取下单参数,访问频率 1次/秒
+
+示例  
+
+```
+# Request
+POST https://api2.hopex.com/api/v1/get_orderParas
+{
+  "param": {
+    "contractCode": "BTCUSDT",
+    "direct": 1
+  }
+}
+# Response
+{
+  "data": {
+    "contractCode": "BTCUSDT",
+    "contractDirect": "Forward",
+    "contractValue": "0.0001",
+    "valueUnit": "BTC",
+    "closeCurrency": "USDT",
+    "takeRate": null,
+    "userAllowTrade": false,
+    "marketAllowTrade": true,
+    "minPricePrecision": 1,
+    "minPriceMovement": "0.5",
+    "minPriceMovementDisplay": "0.5 USDT",
+    "longMaintenanceMarginRate": "0.005",
+    "longMaintenanceMarginRateDisplay": "0.5%",
+    "shortMaintenanceMarginRate": "0.005",
+    "shortMaintenanceMarginRateDisplay": "0.5%",
+    "minTradeNum": 1,
+    "minTradeNumDisplay": "1张",
+    "availableBalance": null,
+    "availableBalanceDisplay": null,
+    "maxBuyPrice": "7025.5",
+    "minSellPrice": "6616.0",
+    "longMinLeverage": "1.00",
+    "longMaxLeverage": "100.00",
+    "shortMinLeverage": "1.00",
+    "shortMaxLeverage": "100.00",
+    "longDefaultLeverage": "100.00",
+    "shortDefaultLeverage": "100.00",
+    "longLeverage": "100.00",
+    "shortLeverage": "100.00",
+    "openLongMargin": null,
+    "openLongMarginDisplay": null,
+    "openShortMargin": null,
+    "openShortMarginDisplay": null,
+    "openLongAmount": 0,
+    "openShortAmount": 0,
+    "closeLongAmount": 0,
+    "closeShortAmount": 0,
+    "evaluateOrderValue": "0.0000 BTC",
+    "precision": 2
+  },
+  "ret": 0,
+  "errCode": null,
+  "errStr": null,
+  "env": 0,
+  "timestamp": 1586778167221
+}
+```
+
+返回值说明   
+
+```
+longMinLeverage: 多仓杠杆最小值
+longMaxLeverage: 多仓杠杆最大值
+shortMinLeverage: 空仓杠杆最小值
+shortMaxLeverage: 空仓杠杆最大值
+``` 
+
+|参数名|   参数类型|   必填| 描述|
+| :-----    | :-----   | :-----    | :-----   |
+|Authorization|String|是|用户信息验证, Request Header|
+|Date|String|是|当前的GMT时间, Request Header|
+|Digest|String|是|请求包体摘要, Request Header|
+|contractCode|String|是|BTCUSDT ETHUSDT BTCUSD ETHUSD等|
+|direct|int|是|方向:1 多仓，2 空仓|
+
+
+10. Post /api/v1/liquidation_history    获取强平历史,访问频率 1次/秒
 
 示例	
 
@@ -1118,7 +1200,7 @@ showDetail: 忽略
 |page|int|是|第几页,默认1|
 
 
-10. Get /api/v1/account_records    获取用户出入金记录,访问频率 1次/秒
+11. Get /api/v1/account_records    获取用户出入金记录,访问频率 1次/秒
 
 示例	
 

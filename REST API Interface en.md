@@ -995,8 +995,89 @@ data: Leverage
 |leverage|number|yes|Leverage|
 
 
+9. Post /api/v1/get_orderParas    Get Order Parameter, rate limit 1 time/s
 
-9. Post /api/v1/liquidation_history    Get liquidation history, rate limit 1 time/s
+示例  
+
+```
+# Request
+POST https://api2.hopex.com/api/v1/get_orderParas
+{
+  "param": {
+    "contractCode": "BTCUSDT",
+    "direct": 1
+  }
+}
+# Response
+{
+  "data": {
+    "contractCode": "BTCUSDT",
+    "contractDirect": "Forward",
+    "contractValue": "0.0001",
+    "valueUnit": "BTC",
+    "closeCurrency": "USDT",
+    "takeRate": null,
+    "userAllowTrade": false,
+    "marketAllowTrade": true,
+    "minPricePrecision": 1,
+    "minPriceMovement": "0.5",
+    "minPriceMovementDisplay": "0.5 USDT",
+    "longMaintenanceMarginRate": "0.005",
+    "longMaintenanceMarginRateDisplay": "0.5%",
+    "shortMaintenanceMarginRate": "0.005",
+    "shortMaintenanceMarginRateDisplay": "0.5%",
+    "minTradeNum": 1,
+    "minTradeNumDisplay": "1 piece",
+    "availableBalance": null,
+    "availableBalanceDisplay": null,
+    "maxBuyPrice": "7025.5",
+    "minSellPrice": "6616.0",
+    "longMinLeverage": "1.00",
+    "longMaxLeverage": "100.00",
+    "shortMinLeverage": "1.00",
+    "shortMaxLeverage": "100.00",
+    "longDefaultLeverage": "100.00",
+    "shortDefaultLeverage": "100.00",
+    "longLeverage": "100.00",
+    "shortLeverage": "100.00",
+    "openLongMargin": null,
+    "openLongMarginDisplay": null,
+    "openShortMargin": null,
+    "openShortMarginDisplay": null,
+    "openLongAmount": 0,
+    "openShortAmount": 0,
+    "closeLongAmount": 0,
+    "closeShortAmount": 0,
+    "evaluateOrderValue": "0.0000 BTC",
+    "precision": 2
+  },
+  "ret": 0,
+  "errCode": null,
+  "errStr": null,
+  "env": 0,
+  "timestamp": 1586778167221
+}
+```
+
+Return Value   
+
+```
+longMinLeverage: Long Leverage Min
+longMaxLeverage: Long Leverage Max
+shortMinLeverage: Short Leverage Min
+shortMaxLeverage: Short Leverage Max
+``` 
+
+|Parameter|Type|Required|Description|
+| :-----    | :-----   | :-----    | :-----   |
+|Authorization|String|yes|User Information Verification, Request Header|
+|Date|String|yes|Current GMT Time, Request Header|
+|Digest|String|yes|Request for Package Summary, Request Header|
+|contractCode|String|是|BTCUSDT ETHUSDT BTCUSD ETHUSD等|
+|direct|int|yes|Long or Short:1 Long,2 Short|
+
+
+10. Post /api/v1/liquidation_history    Get liquidation history, rate limit 1 time/s
 
 Example
 
@@ -1111,7 +1192,7 @@ showDetail: Ignore
 
 
 
-10. Get /api/v1/account_records    Get deposit and withdraw history, rate limit 1 time/s
+11. Get /api/v1/account_records    Get deposit and withdraw history, rate limit 1 time/s
 
 Example
 ```
