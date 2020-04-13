@@ -31,6 +31,7 @@ GET https://api2.hopex.com/api/v1/ticker?contractCode=BTCUSDT
   "data": {
     "contractCode": "BTCUSDT",
     "spotIndexCode": "spot_index_BTCUSDT",
+    "fairPriceCode": "fair_price_BTCUSDT",
     "contractName": "BTC/USDT永续",
     "closeCurrency": "USDT",
     "allowTrade": true,
@@ -38,7 +39,6 @@ GET https://api2.hopex.com/api/v1/ticker?contractCode=BTCUSDT
     "lastPrice": "-3520.0",
     "lastPriceToUSD": "$3522.11",
     "lastPriceLegal": "$3522.11",
-    "direction": -1,
     "changePercent24": "-0.21%",
     "marketPrice": "3518.86",
     "marketPriceInfo": "全球top10成交量交易所均价",
@@ -63,6 +63,7 @@ GET https://api2.hopex.com/api/v1/ticker?contractCode=BTCUSDT
 ```
 contractCode: 合约编码
 spotIndexCode: 现货指数编码
+fairPriceCode: 合理价格编码
 contractName: 合约名称
 closeCurrency: 结算货币
 allowTrade: 是否允许交易
@@ -70,7 +71,6 @@ pause: 是否暂停交易,暂停：true 启用: false
 lastPrice: 最新价
 lastPriceToUSD: 最新价To USD
 lastPriceLegal: 最新价To 法币
-direction: 最新价涨跌方向( 1上涨,0持平,-1下跌)
 changePercent24: 24小时涨跌幅
 marketPrice: 现货指数价格
 marketPriceInfo: 现货指数价格-解释
@@ -288,7 +288,6 @@ GET https://api2.hopex.com/api/v1/markets
             "contractName": "BTC/USDT永续",
             "allowTrade": true,
             "hasPosition": false,
-            "posiDirect": 0,
             "closeCurrency": "USDT",
             "quotedCurrency": "USDT",
             "precision": 2,
@@ -316,10 +315,13 @@ GET https://api2.hopex.com/api/v1/markets
 contractCode: 合约编码
 contractName: 合约名称
 allowTrade: 是否允许交易
+hasPosition: 是否有持仓
 closeCurrency: 结算货币
+quotedCurrency: 标价币种
+precision: 合理价格精度
 minPriceMovement: 最小变动价位
-lastestPrice: 最新价
 pricePrecision: 价格精度
+lastestPrice: 最新价
 changePercent24h: 24小时涨跌幅
 sumAmount24h：24小时交易额, 以结算货币为单位
 sumAmount24hUSDT: 24小时交易额, 以USDT为单位,
@@ -430,10 +432,11 @@ GET https://api2.hopex.com/api/v1/userinfo
 # Response
 {
     "data": {
-        "conversionCurrency": "USD",
         "profitRate": "0.00%",
         "totalWealth": "0.00",
+        "totalWealthUSD":"0.00",
         "floatProfit": "0.00",
+        "floatProfitUSD": "0.00",
         "position": 0,
         "activeOrder": 0
     },
@@ -448,10 +451,11 @@ GET https://api2.hopex.com/api/v1/userinfo
 返回值说明	
 
 ```
-conversionCurrency: 计价货币
 profitRate: 当前持仓收益率(浮动盈亏/持仓占用保证金)
-totalWealth: 账户总权益估值
-floatProfit: 总浮动盈亏估值
+totalWealth: 账户总权益估值(BTC)
+totalWealthUSD: 账户总权益估值(USD)
+floatProfit: 总浮动盈亏估值(BTC)
+floatProfitUSD: 总浮动盈亏估值(USD)
 position: 持仓数
 activeOrder: 活跃委托书数
 ``` 
@@ -461,7 +465,6 @@ activeOrder: 活跃委托书数
 |Authorization|String|是|用户信息验证, Request Header|
 |Date|String|是|当前的GMT时间, Request Header|
 |Digest|String|是|请求包体摘要, Request Header|
-|conversionCurrency|String|否|计价货币,默认为USD, Request Header|
 
 
 2. Post /api/v1/order    下单,访问频率 1次/秒
@@ -557,6 +560,7 @@ GET https://api2.hopex.com/api/v1/order_info?contractCode=BTCUSDT
         {
             "orderId": 120396444,
             "orderType": "买入开多",
+            "orderTypeVal": 1,
             "direct": 1,
             "contractCode": "BTCUSDT",
             "contractName": "BTC/USDT永续",
@@ -571,7 +575,7 @@ GET https://api2.hopex.com/api/v1/order_info?contractCode=BTCUSDT
             "orderStatus": "2",
             "orderStatusDisplay": "等待成交",
             "orderPrice": "12785.5",
-            "leverage": 20,
+            "leverage": "20.00",
             "fee": "--",
             "avgFillMoney": "--",
             "orderMargin": "66.4846 USDT",
@@ -590,8 +594,9 @@ GET https://api2.hopex.com/api/v1/order_info?contractCode=BTCUSDT
 
 ```
 orderId: 订单ID
-orderType 委托类型
-direct 1 多仓，2空仓
+orderType: 委托类型
+orderTypeVal: 1:买入开多, 2:卖出开空, 3:买入平空, 4:卖出平多
+direct: 1 多仓，2空仓
 contractCode: 合约code
 contractName: 合约name
 type: 1.限价开仓 2.市价开仓 3.限价全平 4.市价全平 5.限价部分平仓单 6.市价部分平仓单
@@ -668,7 +673,9 @@ POST https://api2.hopex.com/api/v1/order_history?page=1&limit=10
                 "avgFillMoney": "5219.50",
                 "closePosPNL": "-0.0050 USDT",
                 "timestamp": 1555469751974534,
-                "orderType": "卖出开空"
+                "orderTypeVal" : 2,
+                "orderType": "卖出开空",
+                "cancelReason": "撤销原因"
             },
             ...
         ]
@@ -703,7 +710,9 @@ fee: 手续费(小数点后4位)
 avgFillMoney: 成交均价(指数_合理价格小数位数)
 closePosPNL: 平仓盈亏 小数点后4位
 timestamp: 时间戳(微秒)
+orderTypeVal: 1:买入开多, 2:卖出开空, 3:买入平空, 4:卖出平多
 orderType: 买入开多 卖出开空 买入平空 卖出平多
+cancelReason: 撤销原因
 ``` 
 
 |参数名|	参数类型|	必填|	描述|
@@ -759,7 +768,11 @@ GET https://api2.hopex.com/api/v1/position
             "minPriceMovement": 0.5,
             "minPriceMovementPrecision": 1,
             "positionQuantityFreeze": "0",
-            "closeablePositionQuantity": "200"
+            "closeablePositionQuantity": "200",
+            "isAddMargin": false,
+            "sort": 9999,
+            "isWhitelistExist": true,
+            "closeCurrency": "USDT"
         }
     ],
     "ret": 0,
@@ -801,6 +814,10 @@ minPriceMovement: 最小变动价位
 minPriceMovementPrecision: 最小变动价位精度
 positionQuantityFreeze: 冻结的持仓量,等待成交的平仓订单的总量
 closeablePositionQuantity: 可平数量
+isAddMargin : 是否设置追加保证金
+sort: 排序
+isWhitelistExist: 是否存在白名单
+closeCurrency: 结算货币
 ``` 
 
 |参数名|	参数类型|	必填|	描述|
@@ -821,19 +838,91 @@ GET https://api2.hopex.com/api/v1/wallet
 
 # Response
 {
-    "data": {
+   "data": {
+        "summary": {
+            "conversionCurrency": "USD",
+            "totalWealth": "0.78",
+            "floatProfit": "0.00",
+            "availableBalance": "0.78"
+        },
         "detail": [
             {
                 "assetName": "USDT",
-                "totalWealth": "4.60731228"
+                "assetLogoUrl": null,
+                "floatProfit": "0.00000000",
+                "floatProfitLegal": "0.00 USD",
+                "profitRate": "0.00% ",
+                "totalWealth": "0.77484596",
+                "totalWealthLegal": "0.78 USD",
+                "totalWealthInfo": "总权益 = 钱包余额 + 浮动盈亏",
+                "availableBalance": "0.77484596",
+                "availableBalanceLegal": "0.78 USD",
+                "availableBalanceInfo": "可用余额 = 钱包余额 - 持仓占用保证金 - 委托占用保证金 - 出金冻结金额",
+                "walletBalance": "0.77484596",
+                "walletBalanceLegal": "0.78 USD",
+                "walletBalanceInfo": "钱包余额 = 入金 - 出金 + 平仓盈亏 - 交易手续费",
+                "positionMargin": "0.00000000",
+                "positionMarginLegal": "0.00 USD",
+                "delegateMargin": "0.00000000",
+                "delegateMarginLegal": "0.00 USD",
+                "withdrawFreeze": "0.00000000",
+                "withdrawFreezeLegal": "0.00 USD",
+                "depositAmount": "1266.87475194",
+                "depositAmountLegal": "1267.95 USD",
+                "withdrawAmount": "1231.50005415",
+                "withdrawAmountLegal": "1232.55 USD"
             },
             {
                 "assetName": "BTC",
-                "totalWealth": "0.00000000"
+                "assetLogoUrl": null,
+                "floatProfit": "0.00000000",
+                "floatProfitLegal": "0.00 USD",
+                "profitRate": "0.00% ",
+                "totalWealth": "0.00000000",
+                "totalWealthLegal": "0.00 USD",
+                "totalWealthInfo": "总权益 = 钱包余额 + 浮动盈亏",
+                "availableBalance": "0.00000000",
+                "availableBalanceLegal": "0.00 USD",
+                "availableBalanceInfo": "可用余额 = 钱包余额 - 持仓占用保证金 - 委托占用保证金 - 出金冻结金额",
+                "walletBalance": "0.00000000",
+                "walletBalanceLegal": "0.00 USD",
+                "walletBalanceInfo": "钱包余额 = 入金 - 出金 + 平仓盈亏 - 交易手续费",
+                "positionMargin": "0.00000000",
+                "positionMarginLegal": "0.00 USD",
+                "delegateMargin": "0.00000000",
+                "delegateMarginLegal": "0.00 USD",
+                "withdrawFreeze": "0.00000000",
+                "withdrawFreezeLegal": "0.00 USD",
+                "depositAmount": "0.00085151",
+                "depositAmountLegal": "5.90 USD",
+                "withdrawAmount": "0.00085151",
+                "withdrawAmountLegal": "5.90 USD"
             },
             {
                 "assetName": "ETH",
-                "totalWealth": "0.77710121"
+                "assetLogoUrl": null,
+                "floatProfit": "0.00000000",
+                "floatProfitLegal": "0.00 USD",
+                "profitRate": "0.00% ",
+                "totalWealth": "0.00000000",
+                "totalWealthLegal": "0.00 USD",
+                "totalWealthInfo": "总权益 = 钱包余额 + 浮动盈亏",
+                "availableBalance": "0.00000000",
+                "availableBalanceLegal": "0.00 USD",
+                "availableBalanceInfo": "可用余额 = 钱包余额 - 持仓占用保证金 - 委托占用保证金 - 出金冻结金额",
+                "walletBalance": "0.00000000",
+                "walletBalanceLegal": "0.00 USD",
+                "walletBalanceInfo": "钱包余额 = 入金 - 出金 + 平仓盈亏 - 交易手续费",
+                "positionMargin": "0.00000000",
+                "positionMarginLegal": "0.00 USD",
+                "delegateMargin": "0.00000000",
+                "delegateMarginLegal": "0.00 USD",
+                "withdrawFreeze": "0.00000000",
+                "withdrawFreezeLegal": "0.00 USD",
+                "depositAmount": "0.07003782",
+                "depositAmountLegal": "11.03 USD",
+                "withdrawAmount": "0.07003782",
+                "withdrawAmountLegal": "11.03 USD"
             }
         ]
     },
@@ -848,8 +937,28 @@ GET https://api2.hopex.com/api/v1/wallet
 返回值说明	
 
 ```
-assetName: 资产名字
-totalWealth: 数量
+conversionCurrency: 计价货币
+totalWealth: 总权益
+totalWealthLegal: 总权益 (USD)
+floatProfit: 浮动盈亏
+floatProfitLegal: 浮动盈亏 (USD)
+availableBalance: 可用余额
+availableBalanceLegal: 可用余额 (USD)
+assetName: 货币名称
+assetLogoUrl: 货币logo
+profitRate: 收益率
+walletBalance: 钱包余额
+walletBalanceLegal: 钱包余额 (USD)
+positionMargin: 持仓保证金
+positionMarginLegal: 持仓保证金 (USD)
+delegateMargin: 委托占用保证金
+delegateMarginLegal: 委托占用保证金 (USD)
+withdrawFreeze: 提现冻结保证金
+withdrawFreezeLegal: 提现冻结保证金 (USD)
+depositAmount: 入金
+depositAmountLegal: 入金(USD)
+withdrawAmount: 出金
+withdrawAmountLegal: 出金 (USD)
 ``` 
 
 |参数名|	参数类型|	必填|	描述|
@@ -859,58 +968,7 @@ totalWealth: 数量
 |Digest|String|是|请求包体摘要, Request Header|
 
 
-8. Get /api/v1/get_leverage    获取用户合约杠杆,访问频率 1次/秒
-
-示例	
-
-```
-# Request
-GET https://api2.hopex.com/api/v1/get_leverage?contractCode=BTCUSDT
-
-# Response
-{
-    "data": {
-        "longLeverage": "20.00",
-        "shortLeverage": "15.00",
-        "longLeverageEditable": true,
-        "shortLeverageEditable": true,
-        "varyRange": "0.5",
-        "maintenanceMarginRate": "0.5%",
-        "minLeverage": 2,
-        "maxLeverage": 100,
-        "defaultLeverage": 59
-    },
-    "ret": 0,
-    "errCode": null,
-    "errStr": null,
-    "env": 0,
-    "timestamp": 1563009712076
-}
-```
-
-返回值说明	
-
-```
-longLeverage: 多仓杠杆（如果没有设置为最大杠杆或默认杠杆）
-shortLeverage: 空仓杠杆
-longLeverageEditable: 多仓杠杆是否允许编辑（如果有活跃委托或者活跃计划委托就不允许编辑）
-shortLeverageEditable: 空仓杠杆是否允许编辑（如果有活跃委托或者活跃计划委托就不允许编辑）
-varyRange: 合约的委托列表区间
-maintenanceMarginRate: 维持保证金率
-minLeverage: 杠杆范围-最小值
-maxLeverage: 杠杆范围-最大值
-defaultLeverage: 默认杠杆
-``` 
-
-|参数名|	参数类型|	必填|	描述|
-| :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|是|用户信息验证, Request Header|
-|Date|String|是|当前的GMT时间, Request Header|
-|Digest|String|是|请求包体摘要, Request Header|
-|contractCode|String|是|合约名字|
-
-
-9. Get /api/v1/set_leverage    获取用户合约杠杆,访问频率 1次/秒
+8. Get /api/v1/set_leverage    设置用户合约杠杆,访问频率 1次/秒
 
 示例	
 
@@ -920,7 +978,7 @@ GET https://api2.hopex.com/api/v1/set_leverage?contractCode=BTCUSDT&direct=2&lev
 
 # Response
 {
-    "data": 70,
+    "data": 70.00,
     "ret": 0,
     "errCode": null,
     "errStr": null,
@@ -941,11 +999,11 @@ data: 设置成功的杠杆倍数
 |Date|String|是|当前的GMT时间, Request Header|
 |Digest|String|是|请求包体摘要, Request Header|
 |contractCode|String|是|合约名字|
-|direct|String|是|方向:1 多仓，2 空仓|
-|leverage|String|是|杠杆倍数|
+|direct|int|是|方向:1 多仓，2 空仓|
+|leverage|number|是|杠杆倍数|
 
 
-10. Post /api/v1/liquidation_history    获取强平历史,访问频率 1次/秒
+9. Post /api/v1/liquidation_history    获取强平历史,访问频率 1次/秒
 
 示例	
 
@@ -975,8 +1033,9 @@ POST https://api2.hopex.com/api/v1/liquidation_history
                 "side": "2",
                 "sideDisplay": "买入",
                 "orderType": "买入平空",
+                "orderTypeVal": 3,
                 "direct": 2,
-                "leverage": 20,
+                "leverage": "20.00",
                 "orderQuantity": "+70,731",
                 "orderPrice": "194.43",
                 "closePosPNL": "-6545.5086 USDT",
@@ -998,8 +1057,9 @@ POST https://api2.hopex.com/api/v1/liquidation_history
                 "side": "1",
                 "sideDisplay": "卖出",
                 "orderType": "卖出平多",
+                "orderTypeVal": 4,
                 "direct": 1,
-                "leverage": 20,
+                "leverage": "20.00",
                 "orderQuantity": "-1,123",
                 "orderPrice": "6.4883",
                 "closePosPNL": "-383.6963 USDT",
@@ -1010,7 +1070,8 @@ POST https://api2.hopex.com/api/v1/liquidation_history
                 "directionDisplay": "多",
                 "positionMargin": "+387.3395 USDT",
                 "openPrice": "6.8300",
-                "liquidationPriceReal": "6.5567"
+                "liquidationPriceReal": "6.5567",
+                "showDetail": false
             }
         ]
     },
@@ -1031,9 +1092,9 @@ contractName: 合约name
 side: 方向, 1:卖 2买
 sideDisplay: 方向
 orderType: 买入开多 卖出开空 买入平空 卖出平多
+orderTypeVal: 1:买入开多, 2:卖出开空, 3:买入平空, 4:卖出平多
 direct: 订单对应的持仓方向: 1.多仓 2.空仓
 leverage: 杠杆倍数（2位小数）
-ftime: 完成时间
 orderQuantity: 数量（张）
 orderPrice: 价格
 closePosPNL: 平仓盈亏 小数点后4位
@@ -1044,6 +1105,7 @@ direction: 1.空 2.多
 positionMargin: 持仓占用保证金 (4位小数)
 openPrice: 开仓均价
 liquidationPriceReal: 强平价格
+showDetail: 忽略
 ``` 
 
 |参数名|	参数类型|	必填|	描述|
@@ -1056,7 +1118,7 @@ liquidationPriceReal: 强平价格
 |page|int|是|第几页,默认1|
 
 
-11. Get /api/v1/account_records    获取用户出入金记录,访问频率 1次/秒
+10. Get /api/v1/account_records    获取用户出入金记录,访问频率 1次/秒
 
 示例	
 
@@ -1072,7 +1134,7 @@ GET https://api2.hopex.com/api/v1/account_records?page=1&limit=10
         "pageSize": 10,
         "result": [
             {
-	    	"id": 58413,
+	    		"id": 58413,
                 "asset": "USDT",
                 "orderType": 4,
                 "orderTypeD": "普通链上出金",
@@ -1086,7 +1148,7 @@ GET https://api2.hopex.com/api/v1/account_records?page=1&limit=10
             },
             ...
             {
-	    	"id": 58421,
+	    		"id": 58421,
                 "asset": "USDT",
                 "orderType": 2,
                 "orderTypeD": "OTC出金",

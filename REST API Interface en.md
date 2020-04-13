@@ -34,6 +34,7 @@ GET https://api2.hopex.com/api/v1/ticker?contractCode=BTCUSDT
   "data": {
     "contractCode": "BTCUSDT",
     "spotIndexCode": "spot_index_BTCUSDT",
+    "fairPriceCode": "fair_price_BTCUSDT",
     "contractName": "BTC/USDT Swap",
     "closeCurrency": "USDT",
     "allowTrade": true,
@@ -66,6 +67,7 @@ Return Value
 ```
 contractCode: Contract Code
 spotIndexCode: Spot Index Code
+fairPriceCode: Fair Price Code
 contractName: Contract Name
 closeCurrency: Settlement Currency
 allowTrade: Whether the trade is applicable
@@ -73,7 +75,6 @@ pause: whether to pause trade or not, Pause：true  Continue: false
 lastPrice: The latest price
 lastPriceToUSD: Latest USD Price
 lastPriceLegal: Latest Fiat Price
-direction: Rise or fall of the latest price ( 1rise, 0 flat,-1fall)
 changePercent24: 24h Rise or Fall 
 marketPrice: Spot Index Price
 marketPriceInfo: Spot Index Price - Explanation
@@ -285,7 +286,6 @@ GET https://api2.hopex.com/api/v1/markets
             "contractName": "BTC/USDT Perpetual Swap",
             "allowTrade": true,
             "hasPosition": false,
-            "posiDirect": 0,
             "closeCurrency": "USDT",
             "quotedCurrency": "USDT",
             "precision": 2,
@@ -313,10 +313,13 @@ Return Value
 contractCode: Contract Code
 contractName: Contract Name
 allowTrade: Allow trade or not
+hasPosition: Own Position or not
 closeCurrency: Settlement Currency
+quotedCurrency: Quoted Currency
+precision: Fair Price Precision
 minPriceMovement: Tick Size
-lastestPrice: the Latest Price
 pricePrecision: Price Precision
+lastestPrice: the Latest Price
 changePercent24h: 24h Change
 sumAmount24h：24h Trading Turnover in Settlement Currency
 sumAmount24hUSDT: 24h Trading Turnover in USDT
@@ -426,10 +429,11 @@ GET https://api2.hopex.com/api/v1/userinfo
 # Response
 {
     "data": {
-        "conversionCurrency": "USD",
         "profitRate": "0.00%",
         "totalWealth": "0.00",
+        "totalWealthUSD":"0.00",
         "floatProfit": "0.00",
+        "floatProfitUSD": "0.00",
         "position": 0,
         "activeOrder": 0
     },
@@ -444,10 +448,11 @@ GET https://api2.hopex.com/api/v1/userinfo
 Return Value    
 
 ```
-conversionCurrency: Quote Currency
 profitRate: Unrealized P/L Rate(Unrealized P/L/Position Margin)
-totalWealth: Total Equity
-floatProfit: Floating P/L
+totalWealth: Total Equity   (BTC)
+totalWealthUSD: Total Equity (USD)
+floatProfit: Floating P/L (BTC)
+floatProfitUSD: Floating P/L (USD)
 position: Positions
 activeOrder: Active Orders
 ``` 
@@ -457,7 +462,6 @@ activeOrder: Active Orders
 |Authorization|String|yes|User Information Verification, Request Header|
 |Date|String|yes|Current GMT Time, Request Header|
 |Digest|String|yes|Request for Package Summary, Request Header|
-|conversionCurrency|String|no|Quote Currency,Default in USD, Request Header|
 
 
 2. Post /api/v1/order    Place Orders, rate limit 1 time/s
@@ -552,6 +556,7 @@ GET https://api2.hopex.com/api/v1/order_info?contractCode=BTCUSDT
         {
             "orderId": 120396444,
             "orderType": "Buy long",
+            "orderTypeVal": 1,
             "direct": 1,
             "contractCode": "BTCUSDT",
             "contractName": "BTC/USDT Perpetual Swap",
@@ -566,7 +571,7 @@ GET https://api2.hopex.com/api/v1/order_info?contractCode=BTCUSDT
             "orderStatus": "2",
             "orderStatusDisplay": "Pending",
             "orderPrice": "12785.5",
-            "leverage": 20,
+            "leverage": "20.00",
             "fee": "--",
             "avgFillMoney": "--",
             "orderMargin": "66.4846 USDT",
@@ -585,6 +590,7 @@ Return Value
 ```
 orderId: Order ID
 orderType: Order Type
+orderTypeVal: 1:Buy Long, 2:Sell Short, 3:Buy to Close Short, 4:Sell to Close Long
 direct 1 LONG,2SHORT
 contractCode: Contract Code
 contractName: Contract Name
@@ -662,7 +668,9 @@ POST https://api2.hopex.com/api/v1/order_history
                 "avgFillMoney": "5219.50",
                 "closePosPNL": "-0.0050 USDT",
                 "timestamp": 1555469751974534,
-                "orderType": "Sell to Open Short"
+                "orderTypeVal" : 2,
+                "orderType": "Sell to Open Short",
+                "cancelReason": "Cancel Reason"
             },
             ...
         ]
@@ -697,7 +705,9 @@ fee: Trading Fee(4 decimals)
 avgFillMoney: Average Deal Price(Index_Fair Price Decimals)
 closePosPNL: Realized P/L 4 decimals
 timestamp: Time Stamp(Microsecond)
+orderTypeVal: 1:Buy Long, 2:Sell Short, 3:Buy to Close Short, 4:Sell to Close Long
 orderType: Buy to Open Long, Sell to Open Short, Buy to Close Short, Sell to Close Short
+cancelReason: Cancel Reason
 ``` 
 
 |Parameter|	Type|	Required|	Description|
@@ -753,7 +763,11 @@ GET https://api2.hopex.com/api/v1/position
             "minPriceMovement": 0.5,
             "minPriceMovementPrecision": 1,
             "positionQuantityFreeze": "0",
-            "closeablePositionQuantity": "200"
+            "closeablePositionQuantity": "200",
+            "isAddMargin": false,
+            "sort": 9999,
+            "isWhitelistExist": true,
+            "closeCurrency": "USDT"
         }
     ],
     "ret": 0,
@@ -794,6 +808,10 @@ minPriceMovement: Tick Size
 minPriceMovementPrecision: Tick Size Precision
 positionQuantityFreeze: Frozen Positions,Total number of close orders that are in pending
 closeablePositionQuantity: Quantity of  existing positions that can be closed
+isAddMargin : Set Auto Add Margin
+sort: sort
+isWhitelistExist: Exist In Whitelist
+closeCurrency: Settlement currency
 ``` 
 
 |Parameter|	Type|	Required|	Description|
@@ -815,18 +833,90 @@ GET https://api2.hopex.com/api/v1/wallet
 # Response
 {
     "data": {
+        "summary": {
+            "conversionCurrency": "USD",
+            "totalWealth": "0.78",
+            "floatProfit": "0.00",
+            "availableBalance": "0.78"
+        },
         "detail": [
             {
                 "assetName": "USDT",
-                "totalWealth": "4.60731228"
+                "assetLogoUrl": null,
+                "floatProfit": "0.00000000",
+                "floatProfitLegal": "0.00 USD",
+                "profitRate": "0.00% ",
+                "totalWealth": "0.77484596",
+                "totalWealthLegal": "0.78 USD",
+                "totalWealthInfo": "Total equity = wallet balance + unrealized profit and loss",
+                "availableBalance": "0.77484596",
+                "availableBalanceLegal": "0.78 USD",
+                "availableBalanceInfo": "Available Balance = Wallet Balance - Position Margin - Order Margin - Withdrawal Amount",
+                "walletBalance": "0.77484596",
+                "walletBalanceLegal": "0.78 USD",
+                "walletBalanceInfo": "Wallet Balance = Deposit - Withdraw+ Closing Profit and Loss - Trading Fee",
+                "positionMargin": "0.00000000",
+                "positionMarginLegal": "0.00 USD",
+                "delegateMargin": "0.00000000",
+                "delegateMarginLegal": "0.00 USD",
+                "withdrawFreeze": "0.00000000",
+                "withdrawFreezeLegal": "0.00 USD",
+                "depositAmount": "1266.87475194",
+                "depositAmountLegal": "1268.27 USD",
+                "withdrawAmount": "1231.50005415",
+                "withdrawAmountLegal": "1232.85 USD"
             },
             {
                 "assetName": "BTC",
-                "totalWealth": "0.00000000"
+                "assetLogoUrl": null,
+                "floatProfit": "0.00000000",
+                "floatProfitLegal": "0.00 USD",
+                "profitRate": "0.00% ",
+                "totalWealth": "0.00000000",
+                "totalWealthLegal": "0.00 USD",
+                "totalWealthInfo": "Total equity = wallet balance + unrealized profit and loss",
+                "availableBalance": "0.00000000",
+                "availableBalanceLegal": "0.00 USD",
+                "availableBalanceInfo": "Available Balance = Wallet Balance - Position Margin - Order Margin - Withdrawal Amount",
+                "walletBalance": "0.00000000",
+                "walletBalanceLegal": "0.00 USD",
+                "walletBalanceInfo": "Wallet Balance = Deposit - Withdraw+ Closing Profit and Loss - Trading Fee",
+                "positionMargin": "0.00000000",
+                "positionMarginLegal": "0.00 USD",
+                "delegateMargin": "0.00000000",
+                "delegateMarginLegal": "0.00 USD",
+                "withdrawFreeze": "0.00000000",
+                "withdrawFreezeLegal": "0.00 USD",
+                "depositAmount": "0.00085151",
+                "depositAmountLegal": "5.91 USD",
+                "withdrawAmount": "0.00085151",
+                "withdrawAmountLegal": "5.91 USD"
             },
             {
                 "assetName": "ETH",
-                "totalWealth": "0.77710121"
+                "assetLogoUrl": null,
+                "floatProfit": "0.00000000",
+                "floatProfitLegal": "0.00 USD",
+                "profitRate": "0.00% ",
+                "totalWealth": "0.00000000",
+                "totalWealthLegal": "0.00 USD",
+                "totalWealthInfo": "Total equity = wallet balance + unrealized profit and loss",
+                "availableBalance": "0.00000000",
+                "availableBalanceLegal": "0.00 USD",
+                "availableBalanceInfo": "Available Balance = Wallet Balance - Position Margin - Order Margin - Withdrawal Amount",
+                "walletBalance": "0.00000000",
+                "walletBalanceLegal": "0.00 USD",
+                "walletBalanceInfo": "Wallet Balance = Deposit - Withdraw+ Closing Profit and Loss - Trading Fee",
+                "positionMargin": "0.00000000",
+                "positionMarginLegal": "0.00 USD",
+                "delegateMargin": "0.00000000",
+                "delegateMarginLegal": "0.00 USD",
+                "withdrawFreeze": "0.00000000",
+                "withdrawFreezeLegal": "0.00 USD",
+                "depositAmount": "0.07003782",
+                "depositAmountLegal": "11.12 USD",
+                "withdrawAmount": "0.07003782",
+                "withdrawAmountLegal": "11.12 USD"
             }
         ]
     },
@@ -840,8 +930,28 @@ GET https://api2.hopex.com/api/v1/wallet
 
 Return Value
 ```
+conversionCurrency: Quote Currency
+totalWealth: Total Equity
+totalWealthLegal: Total Equity (USD)
+floatProfit: Floating P/L
+floatProfitLegal: Floating P/L (USD)
+availableBalance: Available Balance
+availableBalanceLegal: Available Balance (USD)
 assetName: Asset Name
-totalWealth: Asset Value
+assetLogoUrl: Asset Logo
+profitRate: Profit Rate
+walletBalance: Wallet Balance
+walletBalanceLegal: Wallet Balance (USD)
+positionMargin: Position Margin
+positionMarginLegal: Position Margin (USD)
+delegateMargin: Delegate Margin
+delegateMarginLegal: Delegate Margin (USD)
+withdrawFreeze: Withdraw Freeze Amount
+withdrawFreezeLegal: Withdraw Freeze Amount (USD)
+depositAmount: Deposit Amount
+depositAmountLegal: Deposit Amount (USD)
+withdrawAmount: Withdraw Amount
+withdrawAmountLegal: Withdraw Amount (USD)
 ``` 
 
 |Parameter|    Type|	Required|	Description|
@@ -851,57 +961,7 @@ totalWealth: Asset Value
 |Digest|String|yes|Request for Package Summary, Request Header|
 
 
-8. Get /api/v1/get_leverage    Get positions’ leverages information, rate limit 1 time/s
-
-Example
-
-```
-# Request
-GET https://api2.hopex.com/api/v1/get_leverage?contractCode=BTCUSDT
-
-# Response
-{
-    "data": {
-        "longLeverage": "20.00",
-        "shortLeverage": "15.00",
-        "longLeverageEditable": true,
-        "shortLeverageEditable": true,
-        "varyRange": "0.5",
-        "maintenanceMarginRate": "0.5%",
-        "minLeverage": 2,
-        "maxLeverage": 100,
-        "defaultLeverage": 59
-    },
-    "ret": 0,
-    "errCode": null,
-    "errStr": null,
-    "env": 0,
-    "timestamp": 1563009712076
-}
-```
-
-Return Value
-```
-longLeverage: Leverage of Long Position（If not set as maximum leverage or default leverage）
-shortLeverage: Leverage of Short Position
-longLeverageEditable: If the long position’s leverage is editable（If there are pending orders or pending limit orders exist, the leverage is not editable）
-shortLeverageEditable: If the short position’s leverage is editable（If there are pending orders or pending limit orders exist, the leverage is not editable）
-varyRange: Contract Vary Range
-maintenanceMarginRate: Maintenance Margin Rate
-minLeverage: Minimum Leverage
-maxLeverage: Maximum Leverage
-defaultLeverage: Default Leverage
-``` 
-
-|Parameter|    Type|	Required|	Description|
-| :-----    | :-----   | :-----    | :-----   |
-|Authorization|String|yes|User Information Verfication, Request Header|
-|Date|String|yes|Current GMT Time, Request Header|
-|Digest|String|yes|Request for Package Summary, Request Header|
-|contractCode|String|yes|Contract Code|
-
-
-9. Get /api/v1/set_leverage    Get Contract Leverage, rate limit 1 time/s
+8. Get /api/v1/set_leverage    Set Contract Leverage, rate limit 1 time/s
 
 Example	
 
@@ -911,7 +971,7 @@ GET https://api2.hopex.com/api/v1/set_leverage?contractCode=BTCUSDT&direct=2&lev
 
 # Response
 {
-    "data": 70,
+    "data": 70.00,
     "ret": 0,
     "errCode": null,
     "errStr": null,
@@ -931,12 +991,12 @@ data: Leverage
 |Date|String|yes|Current GMT Time, Request Header|
 |Digest|String|yes|Request for Package Summary, Request Header|
 |contractCode|String|yes|Contract Name|
-|direct|String|yes|Long or Short:1 Long,2 Short|
-|leverage|String|yes|Leverage|
+|direct|int|yes|Long or Short:1 Long,2 Short|
+|leverage|number|yes|Leverage|
 
 
 
-10. Post /api/v1/liquidation_history    Get liquidation history, rate limit 1 time/s
+9. Post /api/v1/liquidation_history    Get liquidation history, rate limit 1 time/s
 
 Example
 
@@ -965,8 +1025,9 @@ POST https://api2.hopex.com/api/v1/liquidation_history
                 "side": "2",
                 "sideDisplay": "Buy",
                 "orderType": "Buy to Close Short",
+                "orderTypeVal": 3,
                 "direct": 2,
-                "leverage": 20,
+                "leverage": "20.00",
                 "orderQuantity": "+70,731",
                 "orderPrice": "194.43",
                 "closePosPNL": "-6545.5086 USDT",
@@ -988,8 +1049,9 @@ POST https://api2.hopex.com/api/v1/liquidation_history
                 "side": "1",
                 "sideDisplay": "Sell",
                 "orderType": "Sell to Close Long",
+                "orderTypeVal": 4,
                 "direct": 1,
-                "leverage": 20,
+                "leverage": "20.00",
                 "orderQuantity": "-1,123",
                 "orderPrice": "6.4883",
                 "closePosPNL": "-383.6963 USDT",
@@ -1000,7 +1062,8 @@ POST https://api2.hopex.com/api/v1/liquidation_history
                 "directionDisplay": "Long",
                 "positionMargin": "+387.3395 USDT",
                 "openPrice": "6.8300",
-                "liquidationPriceReal": "6.5567"
+                "liquidationPriceReal": "6.5567",
+                "showDetail": false
             }
         ]
     },
@@ -1021,9 +1084,9 @@ contractName: Contract Name
 side: Buy or Sell, 1:Sell 2 Buy
 sideDisplay: Buy or Sell
 orderType: Buy to Open Long, Sell to Open Short, Buy to Close Short, Sell to Close Long
+orderTypeVal:  1:Buy Long, 2:Sell Short, 3:Buy to Close Short, 4:Sell to Close Long
 direct: Long or Short: 1.Long 2.Short
 leverage: Leverage（2 Decimals）
-ftime: Finish Time
 orderQuantity: Order Quantity（contracts）
 orderPrice: Order Price
 closePosPNL: Realized P/L, 4 Decimals
@@ -1034,6 +1097,7 @@ direction: 1.Short 2.Long
 positionMargin: Position Margin (4Decimals)
 openPrice: Average Open Price
 liquidationPriceReal: Liquidation Price
+showDetail: Ignore
 ``` 
 
 |Parameter|Type|Required|Description|
@@ -1047,7 +1111,7 @@ liquidationPriceReal: Liquidation Price
 
 
 
-11. Get /api/v1/account_records    Get deposit and withdraw history, rate limit 1 time/s
+10. Get /api/v1/account_records    Get deposit and withdraw history, rate limit 1 time/s
 
 Example
 ```
