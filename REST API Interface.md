@@ -1012,8 +1012,7 @@ data: 设置成功的杠杆倍数
 POST https://api2.hopex.com/api/v1/get_orderParas
 {
   "param": {
-    "contractCode": "BTCUSDT",
-    "direct": 1
+    "contractCode": "BTCUSDT"
   }
 }
 # Response
@@ -1082,7 +1081,6 @@ shortMaxLeverage: 空仓杠杆最大值
 |Date|String|是|当前的GMT时间, Request Header|
 |Digest|String|是|请求包体摘要, Request Header|
 |contractCode|String|是|BTCUSDT ETHUSDT BTCUSD ETHUSD等|
-|direct|int|是|方向:1 多仓，2 空仓|
 
 
 10. Post /api/v1/liquidation_history    获取强平历史,访问频率 1次/秒

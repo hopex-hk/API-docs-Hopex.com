@@ -1004,8 +1004,7 @@ data: Leverage
 POST https://api2.hopex.com/api/v1/get_orderParas
 {
   "param": {
-    "contractCode": "BTCUSDT",
-    "direct": 1
+    "contractCode": "BTCUSDT"
   }
 }
 # Response
@@ -1074,7 +1073,6 @@ shortMaxLeverage: Short Leverage Max
 |Date|String|yes|Current GMT Time, Request Header|
 |Digest|String|yes|Request for Package Summary, Request Header|
 |contractCode|String|是|BTCUSDT ETHUSDT BTCUSD ETHUSD等|
-|direct|int|yes|Long or Short:1 Long,2 Short|
 
 
 10. Post /api/v1/liquidation_history    Get liquidation history, rate limit 1 time/s
